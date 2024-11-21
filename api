@@ -1,24 +1,148 @@
-loadApiUsageData(): void {
-  this.http.get('/v1/admin/smartassistant/getAuditLogs').subscribe((data: any[]) => {
-    console.log('Raw Audit Logs Data:', data); // Log raw data
-    const usageCounts = this.calculateApiUsage(data); // Calculate usage counts
-    console.log('Processed API Usage Counts:', usageCounts); // Log usage counts
-    this.apiUsageData = usageCounts; // Store the calculated usage data
-    this.updateApiUsageChart(); // Initialize the chart
-  });
+Here’s the end-to-end code for implementing the API usage bar chart feature based on your requirements:
+
+1. sa-reports.component.ts
+
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-sa-reports',
+  templateUrl: './sa-reports.component.html',
+  styleUrls: ['./sa-reports.component.css']
+})
+export class SaReportsComponent implements OnInit {
+  apiUsageData: any[] = []; // Holds processed API usage data
+  apiUsageChartOptions: any; // Chart configuration for API usage
+
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.loadApiUsageData(); // Load API usage data on initialization
+  }
+
+  // Step 1: Load API usage data
+  loadApiUsageData(): void {
+    this.http.get('/v1/admin/smartassistant/getAuditLogs').subscribe((data: any[]) => {
+      console.log('Raw Audit Logs Data:', data); // Debug log for raw data
+      const usageCounts = this.calculateApiUsage(data); // Calculate usage counts
+      console.log('Processed API Usage Counts:', usageCounts); // Debug log for processed data
+      this.apiUsageData = usageCounts; // Store the calculated usage data
+      this.updateApiUsageChart(); // Initialize the chart
+    });
+  }
+
+  // Step 2: Calculate API usage counts
+  calculateApiUsage(data: any[]): any[] {
+    // Group data by apiName and calculate counts
+    const usageMap = data.reduce((acc, item) => {
+      const apiName = item.apiName;
+      acc[apiName] = (acc[apiName] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Convert the usage map into an array of objects for the chart
+    return Object.entries(usageMap).map(([key, value]) => ({
+      apiName: key,
+      usageCount: value
+    }));
+  }
+
+  // Step 3: Configure the bar chart
+  updateApiUsageChart(): void {
+    this.apiUsageChartOptions = {
+      data: this.apiUsageData,
+      title: {
+        text: 'API Usage',
+        fontSize: 18
+      },
+      series: [
+        {
+          type: 'bar',
+          xKey: 'apiName',
+          yKey: 'usageCount',
+          fills: ['#4caf50'], // Bar colors
+          strokeWidth: 0
+        }
+      ],
+      axes: [
+        {
+          type: 'category',
+          position: 'bottom',
+          label: {
+            rotation: 30 // Rotate labels for better readability
+          }
+        },
+        {
+          type: 'number',
+          position: 'left',
+          title: {
+            text: 'Usage Count'
+          }
+        }
+      ],
+      legend: {
+        enabled: false // No legend needed for a bar chart
+      }
+    };
+    console.log('Bar Chart Options:', this.apiUsageChartOptions); // Debug log for chart options
+  }
 }
 
-calculateApiUsage(data: any[]): any[] {
-  // Group data by apiName and calculate counts
-  const usageMap = data.reduce((acc, item) => {
-    const apiName = item.apiName;
-    acc[apiName] = (acc[apiName] || 0) + 1;
-    return acc;
-  }, {});
+2. sa-reports.component.html
 
-  // Convert the usage map into an array of objects for the chart
-  return Object.entries(usageMap).map(([key, value]) => ({
-    apiName: key,
-    usageCount: value
-  }));
+<div class="chart-container">
+  <h3>API Usage</h3>
+  <ag-charts-angular
+    *ngIf="apiUsageChartOptions"
+    [options]="apiUsageChartOptions"
+    style="width: 100%; height: 400px;"
+  ></ag-charts-angular>
+</div>
+
+3. sa-reports.component.css
+
+.chart-container {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+h3 {
+  text-align: center;
+  font-size: 20px;
+  color: #333;
+}
+
+4. Sample Audit Logs API Response
+
+Make sure your /v1/admin/smartassistant/getAuditLogs API returns data in this format:
+
+[
+  { "id": 1, "apiName": "processJenkinsResponse", "appName": "ssp", "timeStamp": "2024-11-21T05:10:13.414Z" },
+  { "id": 2, "apiName": "getDocumentation", "appName": "ssp", "timeStamp": "2024-11-21T05:12:20.500Z" },
+  { "id": 3, "apiName": "processJenkinsResponse", "appName": "ssp", "timeStamp": "2024-11-21T05:14:10.700Z" },
+  { "id": 4, "apiName": "getDocumentation", "appName": "ssp", "timeStamp": "2024-11-21T05:15:30.300Z" },
+  { "id": 5, "apiName": "createOperationalSupport", "appName": "ssp", "timeStamp": "2024-11-21T05:16:44.100Z" },
+  { "id": 6, "apiName": "processJenkinsResponse", "appName": "ssp", "timeStamp": "2024-11-21T05:17:50.000Z" }
+]
+
+5. Expected Output
+
+	1.	A bar chart showing API names on the X-axis and their usage counts on the Y-axis.
+	2.	Each bar represents the usage count for a specific API.
+
+Example chart configuration:
+	•	X-axis: processJenkinsResponse, getDocumentation, createOperationalSupport
+	•	Y-axis: 3, 2, 1 (Usage Counts)
+
+6. Debugging Steps
+
+	•	If the chart is not rendering, verify:
+	1.	API Response: Check console.log('Raw Audit Logs Data:', data) to ensure the API returns valid data.
+	2.	Processed Data: Check console.log('Processed API Usage Counts:', usageCounts) to ensure the counts are calculated correctly.
+	3.	Chart Options: Check console.log('Bar Chart Options:', this.apiUsageChartOptions) to ensure the chart is configured correctly.
+
+This end-to-end code will dynamically process the API response, calculate the usage counts, and render a bar chart for API usage. Let me know if you encounter any issues!
