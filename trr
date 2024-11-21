@@ -1,0 +1,165 @@
+Since the data is already coming from the API and the error persists, the issue seems to be with how the data is processed or rendered into the Ag-Charts component. Let’s address this step by step:
+
+Fixes for Rendering Data in Ag-Charts
+
+1. Check the Data Format
+
+Ensure that the data being passed into the charts has the correct structure. Ag-Charts expects data in a specific format for the data property.
+
+For example, the feedbackData should be formatted as follows:
+
+[
+  { "satisfaction": "very_satisfied", "count": 40 },
+  { "satisfaction": "satisfied", "count": 30 },
+  { "satisfaction": "neutral", "count": 20 },
+  { "satisfaction": "dissatisfied", "count": 10 }
+]
+
+Ensure your processFeedbackData function formats the data correctly:
+
+processFeedbackData(data: any[]): any[] {
+  const grouped = data.reduce((acc, item) => {
+    acc[item.satisfaction] = (acc[item.satisfaction] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.keys(grouped).map((key) => ({
+    satisfaction: key,
+    count: grouped[key]
+  }));
+}
+
+2. Debug the Options
+
+Log the chart options (feedbackSatisfactionOptions and apiUsageOptions) after they are initialized to confirm they are set up correctly.
+
+Add these logs in initializeFeedbackSatisfactionChart and initializeApiUsageChart:
+
+initializeFeedbackSatisfactionChart(feedbackData: any[]): void {
+  console.log('Processed Feedback Data:', feedbackData); // Debugging
+
+  this.feedbackSatisfactionOptions = {
+    data: feedbackData,
+    title: {
+      text: 'Feedback Satisfaction',
+      fontSize: 18
+    },
+    series: [
+      {
+        type: 'pie',
+        angleKey: 'count',
+        labelKey: 'satisfaction',
+        fills: ['#4caf50', '#8bc34a', '#ffc107', '#f44336']
+      }
+    ],
+    legend: {
+      position: 'bottom'
+    }
+  };
+
+  console.log('Feedback Chart Options:', this.feedbackSatisfactionOptions); // Debugging
+}
+
+Similarly, do this for initializeApiUsageChart.
+
+3. Use *ngIf to Delay Rendering
+
+To ensure the charts are rendered only after their options objects are fully initialized, use *ngIf in your HTML:
+
+Update the template:
+
+<div class="reports-container">
+  <h2>Smart Assistant Reports</h2>
+
+  <!-- API Usage Chart -->
+  <div class="chart-container" *ngIf="apiUsageOptions && apiUsageOptions.data.length">
+    <h3>API Usage Patterns</h3>
+    <ag-charts-angular
+      [options]="apiUsageOptions"
+      style="width: 100%; height: 400px;"
+    ></ag-charts-angular>
+  </div>
+
+  <!-- Feedback Satisfaction Chart -->
+  <div class="chart-container" *ngIf="feedbackSatisfactionOptions && feedbackSatisfactionOptions.data.length">
+    <h3>Feedback Satisfaction</h3>
+    <ag-charts-angular
+      [options]="feedbackSatisfactionOptions"
+      style="width: 100%; height: 400px;"
+    ></ag-charts-angular>
+  </div>
+</div>
+
+4. Ensure Ag-Charts Dependencies Are Correctly Integrated
+
+Ensure that ag-charts-angular and ag-charts-community are properly installed and compatible with your Angular version. Check your package.json for:
+
+"ag-charts-angular": "^4.x.x",
+"ag-charts-community": "^4.x.x"
+
+5. Update Default Options
+
+If the data or options are not properly initialized, provide default values to prevent errors:
+
+initializeFeedbackSatisfactionChart(feedbackData: any[]): void {
+  if (!feedbackData || feedbackData.length === 0) {
+    console.warn('No feedback data available. Initializing with empty chart.');
+    this.feedbackSatisfactionOptions = {
+      data: [],
+      title: { text: 'Feedback Satisfaction', fontSize: 18 },
+      series: [],
+      legend: { enabled: false }
+    };
+    return;
+  }
+
+  this.feedbackSatisfactionOptions = {
+    data: feedbackData,
+    title: {
+      text: 'Feedback Satisfaction',
+      fontSize: 18
+    },
+    series: [
+      {
+        type: 'pie',
+        angleKey: 'count',
+        labelKey: 'satisfaction',
+        fills: ['#4caf50', '#8bc34a', '#ffc107', '#f44336']
+      }
+    ],
+    legend: {
+      position: 'bottom'
+    }
+  };
+}
+
+6. Final Debug Checklist
+
+	1.	Data Check:
+	•	Confirm that feedbackData and auditLogsData contain the correct structure.
+	2.	Options Initialization:
+	•	Log the options to ensure they are correctly formatted.
+	3.	Rendering Logic:
+	•	Use *ngIf to ensure charts render only when options are ready.
+	4.	Dependencies:
+	•	Verify that the correct versions of ag-charts-angular and ag-charts-community are installed.
+	5.	CSS for Container:
+	•	Ensure the chart container has proper dimensions:
+
+.chart-container {
+  width: 100%;
+  height: 400px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+Expected Outcome
+
+With these fixes:
+	1.	The Feedback Satisfaction Chart should display with the processed data.
+	2.	The charts will render without errors, and all data processing issues will be resolved.
+
+If the issue persists, share the logs (console.log) for the data and chart options. Let me know how it goes!
