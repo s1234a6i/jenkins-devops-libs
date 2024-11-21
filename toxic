@@ -1,171 +1,148 @@
-You’re absolutely right! We need to ensure that the responses provided by users (e.g., “Very Easy,” “Easy,” etc.) are properly mapped to the charts. Let’s refine the implementation by incorporating this mapping logic so that the data is grouped and displayed meaningfully.
+Here’s the end-to-end code for implementing the API usage bar chart feature based on your requirements:
 
-Step-by-Step Enhanced Solution
+1. sa-reports.component.ts
 
-1. Define Question-Specific Options
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-Each question (feature) has specific response options. We’ll map those options to ensure consistent ordering in the chart, even if some responses have no data.
+@Component({
+  selector: 'app-sa-reports',
+  templateUrl: './sa-reports.component.html',
+  styleUrls: ['./sa-reports.component.css']
+})
+export class SaReportsComponent implements OnInit {
+  apiUsageData: any[] = []; // Holds processed API usage data
+  apiUsageChartOptions: any; // Chart configuration for API usage
 
-features = [
-  {
-    key: 'satisfaction',
-    title: 'Feedback Satisfaction',
-    options: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very Dissatisfied']
-  },
-  {
-    key: 'easeOfUse',
-    title: 'Ease of Use',
-    options: ['Very Easy', 'Easy', 'Neutral', 'Difficult', 'Very Difficult']
-  },
-  {
-    key: 'issueResolved',
-    title: 'Issue Resolved',
-    options: ['Yes', 'Partially', 'No']
-  },
-  {
-    key: 'recommendationLikelihood',
-    title: 'Recommendation Likelihood',
-    options: ['Very Likely', 'Likely', 'Neutral', 'Unlikely', 'Very Unlikely']
+  constructor(private http: HttpClient) {}
+
+  ngOnInit(): void {
+    this.loadApiUsageData(); // Load API usage data on initialization
   }
-];
 
-// Default selected feature
-selectedFeature = this.features[0];
-chartOptions: any; // Dynamic chart options
-feedbackData: any[] = []; // Holds feedback data
-
-2. Process Feedback Data with Mapping
-
-Ensure all response options for the selected feature are represented in the chart, even if some options have no data.
-
-processFeedbackDataByField(field: string, options: string[]): any[] {
-  const grouped = this.feedbackData.reduce((acc, item) => {
-    const value = item[field];
-    acc[value] = (acc[value] || 0) + 1;
-    return acc;
-  }, {});
-
-  // Map options to ensure consistent ordering
-  return options.map((option) => ({
-    label: option,
-    count: grouped[option] || 0 // Default to 0 if no data for the option
-  }));
-}
-
-3. Update Chart Dynamically
-
-Modify the updateChart function to use the mapped options for the selected feature.
-
-updateChart(featureKey: string): void {
-  const selectedFeature = this.features.find((f) => f.key === featureKey);
-  if (selectedFeature) {
-    const processedData = this.processFeedbackDataByField(featureKey, selectedFeature.options);
-    this.initializeChart(selectedFeature.title, processedData);
-    this.selectedFeature = selectedFeature; // Update selected feature
+  // Step 1: Load API usage data
+  loadApiUsageData(): void {
+    this.http.get('/v1/admin/smartassistant/getAuditLogs').subscribe((data: any[]) => {
+      console.log('Raw Audit Logs Data:', data); // Debug log for raw data
+      const usageCounts = this.calculateApiUsage(data); // Calculate usage counts
+      console.log('Processed API Usage Counts:', usageCounts); // Debug log for processed data
+      this.apiUsageData = usageCounts; // Store the calculated usage data
+      this.updateApiUsageChart(); // Initialize the chart
+    });
   }
-}
 
-initializeChart(title: string, chartData: any[]): void {
-  this.chartOptions = {
-    data: chartData,
-    title: {
-      text: title,
-      fontSize: 18
-    },
-    series: [
-      {
-        type: 'pie',
-        angleKey: 'count',
-        labelKey: 'label',
-        fills: ['#4caf50', '#8bc34a', '#ffc107', '#ff9800', '#f44336'] // Colors based on response order
+  // Step 2: Calculate API usage counts
+  calculateApiUsage(data: any[]): any[] {
+    // Group data by apiName and calculate counts
+    const usageMap = data.reduce((acc, item) => {
+      const apiName = item.apiName;
+      acc[apiName] = (acc[apiName] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Convert the usage map into an array of objects for the chart
+    return Object.entries(usageMap).map(([key, value]) => ({
+      apiName: key,
+      usageCount: value
+    }));
+  }
+
+  // Step 3: Configure the bar chart
+  updateApiUsageChart(): void {
+    this.apiUsageChartOptions = {
+      data: this.apiUsageData,
+      title: {
+        text: 'API Usage',
+        fontSize: 18
+      },
+      series: [
+        {
+          type: 'bar',
+          xKey: 'apiName',
+          yKey: 'usageCount',
+          fills: ['#4caf50'], // Bar colors
+          strokeWidth: 0
+        }
+      ],
+      axes: [
+        {
+          type: 'category',
+          position: 'bottom',
+          label: {
+            rotation: 30 // Rotate labels for better readability
+          }
+        },
+        {
+          type: 'number',
+          position: 'left',
+          title: {
+            text: 'Usage Count'
+          }
+        }
+      ],
+      legend: {
+        enabled: false // No legend needed for a bar chart
       }
-    ],
-    legend: {
-      position: 'bottom'
-    }
-  };
+    };
+    console.log('Bar Chart Options:', this.apiUsageChartOptions); // Debug log for chart options
+  }
 }
 
-4. HTML Template
+2. sa-reports.component.html
 
-The template stays the same but uses the enhanced logic for rendering the chart based on the admin’s selection.
-
-<div class="reports-container">
-  <h2>Feedback Analysis</h2>
-
-  <div class="dropdown-container">
-    <label for="feature-select">Select Feedback Feature:</label>
-    <select id="feature-select" (change)="updateChart($event.target.value)">
-      <option *ngFor="let feature of features" [value]="feature.key">
-        {{ feature.title }}
-      </option>
-    </select>
-  </div>
-
-  <div class="chart-container" *ngIf="chartOptions">
-    <h3>{{ selectedFeature.title }}</h3>
-    <ag-charts-angular
-      [options]="chartOptions"
-      style="width: 100%; height: 400px;"
-    ></ag-charts-angular>
-  </div>
+<div class="chart-container">
+  <h3>API Usage</h3>
+  <ag-charts-angular
+    *ngIf="apiUsageChartOptions"
+    [options]="apiUsageChartOptions"
+    style="width: 100%; height: 400px;"
+  ></ag-charts-angular>
 </div>
 
-5. Example Data Handling
-
-Here’s how the API feedback data might look:
-
-[
-  {
-    "id": 1,
-    "satisfaction": "Very Satisfied",
-    "easeOfUse": "Very Easy",
-    "issueResolved": "Yes",
-    "recommendationLikelihood": "Very Likely"
-  },
-  {
-    "id": 2,
-    "satisfaction": "Neutral",
-    "easeOfUse": "Easy",
-    "issueResolved": "Partially",
-    "recommendationLikelihood": "Likely"
-  }
-]
-
-The processFeedbackDataByField function ensures that all response options for each field (e.g., “Very Satisfied,” “Satisfied,” etc.) are accounted for, even if some options have no entries.
-
-6. Styling
-
-Ensure consistent styling for the dropdown and chart container:
-
-.reports-container {
-  padding: 20px;
-}
-
-.dropdown-container {
-  margin-bottom: 20px;
-}
+3. sa-reports.component.css
 
 .chart-container {
+  margin: 20px;
   padding: 20px;
-  background: #fff;
+  border: 1px solid #ddd;
   border-radius: 8px;
+  background-color: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-Expected Behavior
+h3 {
+  text-align: center;
+  font-size: 20px;
+  color: #333;
+}
 
-	1.	Dynamic Chart Updates:
-	•	Admin can select any feedback metric (e.g., “Ease of Use”) from the dropdown, and the chart will update dynamically.
-	2.	Consistent Ordering:
-	•	All response options (e.g., “Very Easy,” “Easy,” etc.) will appear in the chart, even if some have no data.
-	3.	Color Coding:
-	•	Charts use consistent color coding for each response option.
+4. Sample Audit Logs API Response
 
-Advantages
+Make sure your /v1/admin/smartassistant/getAuditLogs API returns data in this format:
 
-	•	Scalable: Adding new feedback questions only requires adding an entry in the features array.
-	•	Complete Data Representation: All response options are displayed consistently, even with zero responses.
-	•	Cleaner Design: A single dynamic chart saves space and is more user-friendly.
+[
+  { "id": 1, "apiName": "processJenkinsResponse", "appName": "ssp", "timeStamp": "2024-11-21T05:10:13.414Z" },
+  { "id": 2, "apiName": "getDocumentation", "appName": "ssp", "timeStamp": "2024-11-21T05:12:20.500Z" },
+  { "id": 3, "apiName": "processJenkinsResponse", "appName": "ssp", "timeStamp": "2024-11-21T05:14:10.700Z" },
+  { "id": 4, "apiName": "getDocumentation", "appName": "ssp", "timeStamp": "2024-11-21T05:15:30.300Z" },
+  { "id": 5, "apiName": "createOperationalSupport", "appName": "ssp", "timeStamp": "2024-11-21T05:16:44.100Z" },
+  { "id": 6, "apiName": "processJenkinsResponse", "appName": "ssp", "timeStamp": "2024-11-21T05:17:50.000Z" }
+]
 
-Let me know if you’d like further clarification or refinements!
+5. Expected Output
+
+	1.	A bar chart showing API names on the X-axis and their usage counts on the Y-axis.
+	2.	Each bar represents the usage count for a specific API.
+
+Example chart configuration:
+	•	X-axis: processJenkinsResponse, getDocumentation, createOperationalSupport
+	•	Y-axis: 3, 2, 1 (Usage Counts)
+
+6. Debugging Steps
+
+	•	If the chart is not rendering, verify:
+	1.	API Response: Check console.log('Raw Audit Logs Data:', data) to ensure the API returns valid data.
+	2.	Processed Data: Check console.log('Processed API Usage Counts:', usageCounts) to ensure the counts are calculated correctly.
+	3.	Chart Options: Check console.log('Bar Chart Options:', this.apiUsageChartOptions) to ensure the chart is configured correctly.
+
+This end-to-end code will dynamically process the API response, calculate the usage counts, and render a bar chart for API usage. Let me know if you encounter any issues!
