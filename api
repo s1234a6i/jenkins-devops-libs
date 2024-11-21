@@ -1,0 +1,175 @@
+For the API usage bar chart, let’s ensure the logic and configuration for the bar chart are implemented correctly. I’ll guide you step by step.
+
+Step 1: Verify API Usage Data
+
+Ensure your API is returning valid usage data. For example, the API usage data format could be:
+
+[
+  { "apiName": "processJenkinsResponse", "usageCount": 15 },
+  { "apiName": "getDocumentation", "usageCount": 8 },
+  { "apiName": "createOperationalSupport", "usageCount": 12 }
+]
+
+Log the API usage data when it’s fetched:
+
+loadApiUsageData(): void {
+  this.http.get('/v1/admin/smartassistant/getApiUsageData').subscribe((data: any) => {
+    console.log('API Usage Data:', data); // Debug log
+    this.apiUsageData = data; // Store the usage data
+    this.updateApiUsageChart(); // Initialize the bar chart
+  });
+}
+
+Step 2: Process and Map Data for Bar Chart
+
+The API usage data needs to be mapped for the bar chart. For example:
+
+updateApiUsageChart(): void {
+  this.apiUsageChartOptions = {
+    data: this.apiUsageData,
+    title: {
+      text: 'API Usage',
+      fontSize: 18
+    },
+    series: [
+      {
+        type: 'bar',
+        xKey: 'apiName',
+        yKey: 'usageCount',
+        fills: ['#4caf50'], // Bar colors
+        strokeWidth: 0
+      }
+    ],
+    axes: [
+      {
+        type: 'category',
+        position: 'bottom',
+        label: {
+          rotation: 30 // Rotate labels for better readability
+        }
+      },
+      {
+        type: 'number',
+        position: 'left',
+        title: {
+          text: 'Usage Count'
+        }
+      }
+    ],
+    legend: {
+      enabled: false // No legend needed for a bar chart
+    }
+  };
+  console.log('Bar Chart Options:', this.apiUsageChartOptions); // Debug log
+}
+
+Step 3: Bar Chart Template
+
+Add a section for the bar chart in the template:
+
+<div class="chart-container">
+  <h3>API Usage</h3>
+  <ag-charts-angular
+    *ngIf="apiUsageChartOptions"
+    [options]="apiUsageChartOptions"
+    style="width: 100%; height: 400px;"
+  ></ag-charts-angular>
+</div>
+
+Step 4: Verify Data Flow
+
+	1.	Check if apiUsageData is populated correctly:
+	•	Log the data in loadApiUsageData() and ensure it matches the expected structure.
+	2.	Check if apiUsageChartOptions is correctly updated:
+	•	Log this.apiUsageChartOptions after updateApiUsageChart() to verify the chart configuration.
+
+Step 5: Full Code for API Usage
+
+Here’s the complete addition to your component:
+
+Component TypeScript (sa-reports.component.ts)
+
+apiUsageData: any[] = []; // Holds API usage data
+apiUsageChartOptions: any; // Chart configuration for API usage
+
+loadApiUsageData(): void {
+  this.http.get('/v1/admin/smartassistant/getApiUsageData').subscribe((data: any) => {
+    console.log('API Usage Data:', data); // Debug log
+    this.apiUsageData = data; // Store the usage data
+    this.updateApiUsageChart(); // Initialize the bar chart
+  });
+}
+
+updateApiUsageChart(): void {
+  this.apiUsageChartOptions = {
+    data: this.apiUsageData,
+    title: {
+      text: 'API Usage',
+      fontSize: 18
+    },
+    series: [
+      {
+        type: 'bar',
+        xKey: 'apiName',
+        yKey: 'usageCount',
+        fills: ['#4caf50'], // Bar colors
+        strokeWidth: 0
+      }
+    ],
+    axes: [
+      {
+        type: 'category',
+        position: 'bottom',
+        label: {
+          rotation: 30 // Rotate labels for better readability
+        }
+      },
+      {
+        type: 'number',
+        position: 'left',
+        title: {
+          text: 'Usage Count'
+        }
+      }
+    ],
+    legend: {
+      enabled: false // No legend needed for a bar chart
+    }
+  };
+  console.log('Bar Chart Options:', this.apiUsageChartOptions); // Debug log
+}
+
+HTML Template (sa-reports.component.html)
+
+<div class="chart-container">
+  <h3>API Usage</h3>
+  <ag-charts-angular
+    *ngIf="apiUsageChartOptions"
+    [options]="apiUsageChartOptions"
+    style="width: 100%; height: 400px;"
+  ></ag-charts-angular>
+</div>
+
+Step 6: Test Scenarios
+
+	•	Scenario 1: No Data
+	•	If the API returns an empty array, ensure the chart displays an appropriate message (e.g., “No data available”).
+	•	You can conditionally hide the chart using:
+
+<div *ngIf="apiUsageData.length === 0">No data available</div>
+
+
+	•	Scenario 2: Misaligned Data
+	•	Verify that the keys in apiUsageData match xKey: 'apiName' and yKey: 'usageCount'.
+
+Expected Behavior
+
+	1.	A bar chart is rendered showing the API names on the X-axis and their usage count on the Y-axis.
+	2.	Each bar represents the usage count for a specific API.
+	3.	If there’s no data, the chart won’t render, and a “No data available” message will be shown.
+
+If the chart still doesn’t render, please share the logs for:
+	•	apiUsageData
+	•	apiUsageChartOptions
+
+This will help pinpoint the issue further.
