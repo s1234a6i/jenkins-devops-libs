@@ -1,0 +1,171 @@
+You’re absolutely right! We need to ensure that the responses provided by users (e.g., “Very Easy,” “Easy,” etc.) are properly mapped to the charts. Let’s refine the implementation by incorporating this mapping logic so that the data is grouped and displayed meaningfully.
+
+Step-by-Step Enhanced Solution
+
+1. Define Question-Specific Options
+
+Each question (feature) has specific response options. We’ll map those options to ensure consistent ordering in the chart, even if some responses have no data.
+
+features = [
+  {
+    key: 'satisfaction',
+    title: 'Feedback Satisfaction',
+    options: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very Dissatisfied']
+  },
+  {
+    key: 'easeOfUse',
+    title: 'Ease of Use',
+    options: ['Very Easy', 'Easy', 'Neutral', 'Difficult', 'Very Difficult']
+  },
+  {
+    key: 'issueResolved',
+    title: 'Issue Resolved',
+    options: ['Yes', 'Partially', 'No']
+  },
+  {
+    key: 'recommendationLikelihood',
+    title: 'Recommendation Likelihood',
+    options: ['Very Likely', 'Likely', 'Neutral', 'Unlikely', 'Very Unlikely']
+  }
+];
+
+// Default selected feature
+selectedFeature = this.features[0];
+chartOptions: any; // Dynamic chart options
+feedbackData: any[] = []; // Holds feedback data
+
+2. Process Feedback Data with Mapping
+
+Ensure all response options for the selected feature are represented in the chart, even if some options have no data.
+
+processFeedbackDataByField(field: string, options: string[]): any[] {
+  const grouped = this.feedbackData.reduce((acc, item) => {
+    const value = item[field];
+    acc[value] = (acc[value] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Map options to ensure consistent ordering
+  return options.map((option) => ({
+    label: option,
+    count: grouped[option] || 0 // Default to 0 if no data for the option
+  }));
+}
+
+3. Update Chart Dynamically
+
+Modify the updateChart function to use the mapped options for the selected feature.
+
+updateChart(featureKey: string): void {
+  const selectedFeature = this.features.find((f) => f.key === featureKey);
+  if (selectedFeature) {
+    const processedData = this.processFeedbackDataByField(featureKey, selectedFeature.options);
+    this.initializeChart(selectedFeature.title, processedData);
+    this.selectedFeature = selectedFeature; // Update selected feature
+  }
+}
+
+initializeChart(title: string, chartData: any[]): void {
+  this.chartOptions = {
+    data: chartData,
+    title: {
+      text: title,
+      fontSize: 18
+    },
+    series: [
+      {
+        type: 'pie',
+        angleKey: 'count',
+        labelKey: 'label',
+        fills: ['#4caf50', '#8bc34a', '#ffc107', '#ff9800', '#f44336'] // Colors based on response order
+      }
+    ],
+    legend: {
+      position: 'bottom'
+    }
+  };
+}
+
+4. HTML Template
+
+The template stays the same but uses the enhanced logic for rendering the chart based on the admin’s selection.
+
+<div class="reports-container">
+  <h2>Feedback Analysis</h2>
+
+  <div class="dropdown-container">
+    <label for="feature-select">Select Feedback Feature:</label>
+    <select id="feature-select" (change)="updateChart($event.target.value)">
+      <option *ngFor="let feature of features" [value]="feature.key">
+        {{ feature.title }}
+      </option>
+    </select>
+  </div>
+
+  <div class="chart-container" *ngIf="chartOptions">
+    <h3>{{ selectedFeature.title }}</h3>
+    <ag-charts-angular
+      [options]="chartOptions"
+      style="width: 100%; height: 400px;"
+    ></ag-charts-angular>
+  </div>
+</div>
+
+5. Example Data Handling
+
+Here’s how the API feedback data might look:
+
+[
+  {
+    "id": 1,
+    "satisfaction": "Very Satisfied",
+    "easeOfUse": "Very Easy",
+    "issueResolved": "Yes",
+    "recommendationLikelihood": "Very Likely"
+  },
+  {
+    "id": 2,
+    "satisfaction": "Neutral",
+    "easeOfUse": "Easy",
+    "issueResolved": "Partially",
+    "recommendationLikelihood": "Likely"
+  }
+]
+
+The processFeedbackDataByField function ensures that all response options for each field (e.g., “Very Satisfied,” “Satisfied,” etc.) are accounted for, even if some options have no entries.
+
+6. Styling
+
+Ensure consistent styling for the dropdown and chart container:
+
+.reports-container {
+  padding: 20px;
+}
+
+.dropdown-container {
+  margin-bottom: 20px;
+}
+
+.chart-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+Expected Behavior
+
+	1.	Dynamic Chart Updates:
+	•	Admin can select any feedback metric (e.g., “Ease of Use”) from the dropdown, and the chart will update dynamically.
+	2.	Consistent Ordering:
+	•	All response options (e.g., “Very Easy,” “Easy,” etc.) will appear in the chart, even if some have no data.
+	3.	Color Coding:
+	•	Charts use consistent color coding for each response option.
+
+Advantages
+
+	•	Scalable: Adding new feedback questions only requires adding an entry in the features array.
+	•	Complete Data Representation: All response options are displayed consistently, even with zero responses.
+	•	Cleaner Design: A single dynamic chart saves space and is more user-friendly.
+
+Let me know if you’d like further clarification or refinements!
