@@ -1,0 +1,116 @@
+Yes, we can simplify the logic by embedding everything into a single function that dynamically processes the feedback data for multiple features (e.g., satisfaction, easeOfUse, issueResolved) and generates corresponding chart configurations in a loop. This approach reduces redundancy and makes the code more maintainable.
+
+Implementation
+
+1. Create a List of Features
+
+Define the list of feedback fields (features) you want to display charts for, along with their display names.
+
+features = [
+  { key: 'satisfaction', title: 'Feedback Satisfaction' },
+  { key: 'easeOfUse', title: 'Ease of Use' },
+  { key: 'issueResolved', title: 'Issue Resolved' }
+];
+
+2. Dynamic Chart Generation
+
+Use a loop to process each feature and create a corresponding chart configuration.
+
+loadFeedbackData(): void {
+  this.http.get(this.feedbackApiUrl).subscribe((data: any) => {
+    console.log('Feedback Data:', data);
+
+    this.features.forEach((feature) => {
+      const featureData = this.processFeedbackDataByField(data, feature.key);
+      this.initializeChart(feature.key, feature.title, featureData);
+    });
+  });
+}
+
+processFeedbackDataByField(data: any[], field: string): any[] {
+  const grouped = data.reduce((acc, item) => {
+    const key = item[field];
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.keys(grouped).map((key) => ({
+    label: key,
+    count: grouped[key]
+  }));
+}
+
+initializeChart(key: string, title: string, chartData: any[]): void {
+  if (!chartData || chartData.length === 0) {
+    console.warn(`No data for ${title}. Initializing with empty chart.`);
+    this[key + 'Options'] = {
+      data: [],
+      title: { text: title, fontSize: 18 },
+      series: [],
+      legend: { enabled: false }
+    };
+    return;
+  }
+
+  this[key + 'Options'] = {
+    data: chartData,
+    title: {
+      text: title,
+      fontSize: 18
+    },
+    series: [
+      {
+        type: 'pie',
+        angleKey: 'count',
+        labelKey: 'label',
+        fills: ['#4caf50', '#8bc34a', '#ffc107', '#f44336']
+      }
+    ],
+    legend: {
+      position: 'bottom'
+    }
+  };
+
+  console.log(`${title} Chart Options:`, this[key + 'Options']);
+}
+
+3. Update HTML to Use Dynamic Options
+
+Iterate through the features array in the template and display a chart for each feature dynamically.
+
+<div class="reports-container">
+  <h2>Smart Assistant Reports</h2>
+
+  <div *ngFor="let feature of features" class="chart-container" [id]="feature.key">
+    <h3>{{ feature.title }}</h3>
+    <ag-charts-angular
+      *ngIf="this[feature.key + 'Options']"
+      [options]="this[feature.key + 'Options']"
+      style="width: 100%; height: 400px;"
+    ></ag-charts-angular>
+  </div>
+</div>
+
+How It Works
+
+	1.	Dynamic Feature Processing:
+	•	features contains the list of fields (e.g., satisfaction, easeOfUse, etc.) to be processed.
+	•	Each field is processed using processFeedbackDataByField.
+	2.	Dynamic Chart Configuration:
+	•	initializeChart generates the chart options dynamically for each feature and stores them as satisfactionOptions, easeOfUseOptions, etc., in the component.
+	3.	Dynamic HTML Rendering:
+	•	The template iterates over features and renders the charts based on dynamically created chart options.
+
+Advantages
+
+	•	Scalability: Adding a new feature (e.g., recommendationLikelihood) requires only an entry in the features array.
+	•	Clean Code: Reduces redundancy by consolidating logic into reusable functions.
+	•	Dynamic Rendering: The charts automatically update when features are added or removed.
+
+Expected Outcome
+
+	•	Each feature (e.g., satisfaction, easeOfUse, issueResolved) will have its own chart rendered dynamically.
+	•	Charts will be displayed only for features with valid data.
+	•	Adding new features is as simple as updating the features array.
+
+Let me know if you need further assistance with this approach!
