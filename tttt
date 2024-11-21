@@ -1,116 +1,209 @@
-Yes, we can simplify the logic by embedding everything into a single function that dynamically processes the feedback data for multiple features (e.g., satisfaction, easeOfUse, issueResolved) and generates corresponding chart configurations in a loop. This approach reduces redundancy and makes the code more maintainable.
+Here’s the end-to-end Angular code for implementing a dynamic chart based on feedback data, incorporating all the logic for features, dropdown selection, and chart updates.
 
-Implementation
+1. Component TypeScript Code
 
-1. Create a List of Features
+sa-reports.component.ts
 
-Define the list of feedback fields (features) you want to display charts for, along with their display names.
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
-features = [
-  { key: 'satisfaction', title: 'Feedback Satisfaction' },
-  { key: 'easeOfUse', title: 'Ease of Use' },
-  { key: 'issueResolved', title: 'Issue Resolved' }
-];
+@Component({
+  selector: 'app-sa-reports',
+  templateUrl: './sa-reports.component.html',
+  styleUrls: ['./sa-reports.component.css']
+})
+export class SaReportsComponent implements OnInit {
+  // Feedback features and their response options
+  features = [
+    {
+      key: 'satisfaction',
+      title: 'Feedback Satisfaction',
+      options: ['Very Satisfied', 'Satisfied', 'Neutral', 'Dissatisfied', 'Very Dissatisfied']
+    },
+    {
+      key: 'easeOfUse',
+      title: 'Ease of Use',
+      options: ['Very Easy', 'Easy', 'Neutral', 'Difficult', 'Very Difficult']
+    },
+    {
+      key: 'issueResolved',
+      title: 'Issue Resolved',
+      options: ['Yes', 'Partially', 'No']
+    },
+    {
+      key: 'recommendationLikelihood',
+      title: 'Recommendation Likelihood',
+      options: ['Very Likely', 'Likely', 'Neutral', 'Unlikely', 'Very Unlikely']
+    }
+  ];
 
-2. Dynamic Chart Generation
+  selectedFeature = this.features[0]; // Default to the first feature
+  chartOptions: any; // Chart configuration
+  feedbackData: any[] = []; // Holds raw feedback data from the API
 
-Use a loop to process each feature and create a corresponding chart configuration.
+  constructor(private http: HttpClient) {}
 
-loadFeedbackData(): void {
-  this.http.get(this.feedbackApiUrl).subscribe((data: any) => {
-    console.log('Feedback Data:', data);
-
-    this.features.forEach((feature) => {
-      const featureData = this.processFeedbackDataByField(data, feature.key);
-      this.initializeChart(feature.key, feature.title, featureData);
-    });
-  });
-}
-
-processFeedbackDataByField(data: any[], field: string): any[] {
-  const grouped = data.reduce((acc, item) => {
-    const key = item[field];
-    acc[key] = (acc[key] || 0) + 1;
-    return acc;
-  }, {});
-
-  return Object.keys(grouped).map((key) => ({
-    label: key,
-    count: grouped[key]
-  }));
-}
-
-initializeChart(key: string, title: string, chartData: any[]): void {
-  if (!chartData || chartData.length === 0) {
-    console.warn(`No data for ${title}. Initializing with empty chart.`);
-    this[key + 'Options'] = {
-      data: [],
-      title: { text: title, fontSize: 18 },
-      series: [],
-      legend: { enabled: false }
-    };
-    return;
+  ngOnInit(): void {
+    this.loadFeedbackData();
   }
 
-  this[key + 'Options'] = {
-    data: chartData,
-    title: {
-      text: title,
-      fontSize: 18
-    },
-    series: [
-      {
-        type: 'pie',
-        angleKey: 'count',
-        labelKey: 'label',
-        fills: ['#4caf50', '#8bc34a', '#ffc107', '#f44336']
-      }
-    ],
-    legend: {
-      position: 'bottom'
-    }
-  };
+  // Load feedback data from the API
+  loadFeedbackData(): void {
+    this.http.get('/v1/admin/smartassistant/getFeedbackData').subscribe((data: any) => {
+      this.feedbackData = data; // Store raw feedback data
+      this.updateChart(this.selectedFeature.key); // Initialize the chart with the default feature
+    });
+  }
 
-  console.log(`${title} Chart Options:`, this[key + 'Options']);
+  // Process feedback data by field and map it to all response options
+  processFeedbackDataByField(field: string, options: string[]): any[] {
+    const grouped = this.feedbackData.reduce((acc, item) => {
+      const value = item[field];
+      acc[value] = (acc[value] || 0) + 1;
+      return acc;
+    }, {});
+
+    return options.map((option) => ({
+      label: option,
+      count: grouped[option] || 0 // Default to 0 if no data for the option
+    }));
+  }
+
+  // Update the chart dynamically based on the selected feature
+  updateChart(featureKey: string): void {
+    const selectedFeature = this.features.find((f) => f.key === featureKey);
+    if (selectedFeature) {
+      const processedData = this.processFeedbackDataByField(featureKey, selectedFeature.options);
+      this.initializeChart(selectedFeature.title, processedData);
+      this.selectedFeature = selectedFeature; // Update the selected feature
+    }
+  }
+
+  // Initialize the chart configuration
+  initializeChart(title: string, chartData: any[]): void {
+    this.chartOptions = {
+      data: chartData,
+      title: {
+        text: title,
+        fontSize: 18
+      },
+      series: [
+        {
+          type: 'pie',
+          angleKey: 'count',
+          labelKey: 'label',
+          fills: ['#4caf50', '#8bc34a', '#ffc107', '#ff9800', '#f44336'] // Colors for responses
+        }
+      ],
+      legend: {
+        position: 'bottom'
+      }
+    };
+  }
 }
 
-3. Update HTML to Use Dynamic Options
+2. Component HTML Template
 
-Iterate through the features array in the template and display a chart for each feature dynamically.
+sa-reports.component.html
 
 <div class="reports-container">
-  <h2>Smart Assistant Reports</h2>
+  <h2>Feedback Analysis</h2>
 
-  <div *ngFor="let feature of features" class="chart-container" [id]="feature.key">
-    <h3>{{ feature.title }}</h3>
+  <!-- Dropdown for selecting the feature -->
+  <div class="dropdown-container">
+    <label for="feature-select">Select Feedback Feature:</label>
+    <select id="feature-select" (change)="updateChart($event.target.value)">
+      <option *ngFor="let feature of features" [value]="feature.key">
+        {{ feature.title }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Chart Container -->
+  <div class="chart-container" *ngIf="chartOptions">
+    <h3>{{ selectedFeature.title }}</h3>
     <ag-charts-angular
-      *ngIf="this[feature.key + 'Options']"
-      [options]="this[feature.key + 'Options']"
+      [options]="chartOptions"
       style="width: 100%; height: 400px;"
     ></ag-charts-angular>
   </div>
 </div>
 
-How It Works
+3. Component CSS Styling
 
-	1.	Dynamic Feature Processing:
-	•	features contains the list of fields (e.g., satisfaction, easeOfUse, etc.) to be processed.
-	•	Each field is processed using processFeedbackDataByField.
-	2.	Dynamic Chart Configuration:
-	•	initializeChart generates the chart options dynamically for each feature and stores them as satisfactionOptions, easeOfUseOptions, etc., in the component.
-	3.	Dynamic HTML Rendering:
-	•	The template iterates over features and renders the charts based on dynamically created chart options.
+sa-reports.component.css
 
-Advantages
+.reports-container {
+  padding: 20px;
+}
 
-	•	Scalability: Adding a new feature (e.g., recommendationLikelihood) requires only an entry in the features array.
-	•	Clean Code: Reduces redundancy by consolidating logic into reusable functions.
-	•	Dynamic Rendering: The charts automatically update when features are added or removed.
+.dropdown-container {
+  margin-bottom: 20px;
+}
 
-Expected Outcome
+.chart-container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-	•	Each feature (e.g., satisfaction, easeOfUse, issueResolved) will have its own chart rendered dynamically.
-	•	Charts will be displayed only for features with valid data.
-	•	Adding new features is as simple as updating the features array.
+4. Mock API Data
 
-Let me know if you need further assistance with this approach!
+Ensure the API (/v1/admin/smartassistant/getFeedbackData) returns data in the following format:
+
+[
+  {
+    "id": 1,
+    "satisfaction": "Very Satisfied",
+    "easeOfUse": "Very Easy",
+    "issueResolved": "Yes",
+    "recommendationLikelihood": "Very Likely"
+  },
+  {
+    "id": 2,
+    "satisfaction": "Neutral",
+    "easeOfUse": "Easy",
+    "issueResolved": "Partially",
+    "recommendationLikelihood": "Likely"
+  },
+  {
+    "id": 3,
+    "satisfaction": "Dissatisfied",
+    "easeOfUse": "Difficult",
+    "issueResolved": "No",
+    "recommendationLikelihood": "Unlikely"
+  }
+]
+
+5. Install Dependencies
+
+Ensure you have the necessary ag-charts-angular package installed:
+
+npm install ag-charts-angular ag-charts-community
+
+6. Add Module Imports
+
+In your Angular module file (app.module.ts), import the Ag-Charts module.
+
+import { AgChartsAngularModule } from 'ag-charts-angular';
+
+@NgModule({
+  declarations: [SaReportsComponent],
+  imports: [
+    BrowserModule,
+    HttpClientModule,
+    AgChartsAngularModule
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+
+Expected Behavior
+
+	1.	A dropdown at the top allows admins to select a feedback feature (e.g., Satisfaction, Ease of Use).
+	2.	The chart updates dynamically to display data for the selected feature.
+	3.	All response options for the selected feature are included, even if some have no data.
+	4.	Consistent color coding is applied across charts for clarity.
+
+Let me know if further adjustments are needed!
