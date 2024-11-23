@@ -1,0 +1,103 @@
+If your CSS is causing continuous animation despite setting the interval and bounce count correctly, the issue is likely due to how the animation is applied. When using animation in CSS, the infinite keyword or similar properties can override your desired behavior. Here’s how to fix this:
+
+Correct CSS for Controlled Animation
+
+Update your CSS to remove any possibility of infinite animation and ensure it runs for a single bounce only:
+
+.bouncing {
+  animation: bounce 1s ease forwards; /* Run a single bounce with 'forwards' to stop at the final state */
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0); /* Default position */
+  }
+  40% {
+    transform: translateY(-20px); /* Bounce height */
+  }
+  60% {
+    transform: translateY(-10px); /* Intermediate bounce height */
+  }
+}
+
+Explanation of Key Changes:
+
+	1.	Single Bounce:
+	•	The animation property specifies 1s for a single bounce and removes the infinite keyword.
+	•	Each bounce runs once when the class is applied.
+	2.	forwards:
+	•	Ensures the element retains its final position after the animation ends.
+	3.	No Infinite Loop:
+	•	This prevents continuous animation unless the class is explicitly reapplied.
+
+Updated TypeScript Code
+
+Modify your TypeScript logic to reapply the bouncing class only for the desired number of bounces:
+
+import { Component, OnInit } from '@angular/core';
+
+@Component({
+  selector: 'app-smart-assistant',
+  templateUrl: './smart-assistant.component.html',
+  styleUrls: ['./smart-assistant.component.css']
+})
+export class SmartAssistantComponent implements OnInit {
+  animationClass: string = ''; // To toggle animation class
+  private bounceCount: number = 0; // Counter for bounces
+  private bounceInterval: any; // Timer for controlling bounces
+  private restartTimer: any; // Timer to restart the bounce cycle
+
+  ngOnInit(): void {
+    this.startControlledBouncing();
+  }
+
+  startControlledBouncing(): void {
+    this.runBouncingCycle(); // Start the initial cycle
+
+    // Restart the bouncing cycle every 60 seconds
+    this.restartTimer = setInterval(() => {
+      this.runBouncingCycle();
+    }, 60000); // Every 60 seconds
+  }
+
+  runBouncingCycle(): void {
+    this.bounceCount = 0; // Reset bounce counter
+
+    // Trigger bounce every 1 second, up to 5 bounces
+    this.bounceInterval = setInterval(() => {
+      this.bounceCount++;
+      this.animationClass = 'bouncing'; // Apply animation class
+
+      setTimeout(() => {
+        this.animationClass = ''; // Remove animation class after the bounce
+      }, 1000); // Ensure the bounce finishes before the next one starts
+
+      if (this.bounceCount >= 5) {
+        clearInterval(this.bounceInterval); // Stop the bounce cycle after 5 bounces
+      }
+    }, 1000); // Trigger each bounce at 1-second intervals
+  }
+}
+
+How It Works:
+
+	1.	Animation Runs Once Per Bounce:
+	•	The bouncing class is applied and removed for each bounce.
+	2.	Controlled Cycle:
+	•	The runBouncingCycle triggers 5 bounces, one every second, and stops afterward.
+	3.	No Continuous Animation:
+	•	The bouncing class is dynamically reapplied, ensuring no infinite animation.
+	4.	Restart Logic:
+	•	A new cycle begins every 60 seconds, creating the desired attention-grabbing effect.
+
+Debugging Steps:
+
+	1.	Verify Class Application:
+	•	Check if the bouncing class is correctly toggled in the DOM for each bounce.
+	•	Use console.log(this.animationClass) inside the runBouncingCycle method.
+	2.	Ensure Correct CSS:
+	•	Verify the animation property in your browser’s developer tools. It should not have infinite.
+	3.	Check Timing:
+	•	Ensure the setTimeout duration aligns with your animation duration (1s).
+
+This approach ensures the animation stops after 5 bounces and does not continue indefinitely. Let me know if you face any issues!
