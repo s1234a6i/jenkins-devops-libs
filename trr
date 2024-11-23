@@ -1,31 +1,28 @@
-/* Main bouncing animation */
+/* Define keyframes for the bounce effect */
 @keyframes bounce {
   0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0); /* Start and end at the same position */
+    transform: translateY(0); /* Resting position */
   }
   40% {
-    transform: translateY(-20px); /* Height of the bounce */
-  }
-  60% {
-    transform: translateY(-10px); /* Intermediate height */
+    transform: translateY(-20px); /* Bounce height */
   }
 }
 
-/* Apply animation to the element */
-.bouncing {
-  animation: bounceSequence 60s linear infinite; /* Full 60-second cycle */
-}
-
-/* Controlled sequence: 5 bounces in the first 5 seconds, pause for 55 seconds */
-@keyframes bounceSequence {
-  0%, 8.33%, 16.67%, 25%, 33.33% { /* First 5 bounces (8.33% per second) */
+/* Define the full cycle: Bounce for 5 seconds, then pause */
+@keyframes bounceCycle {
+  0%, 8.33%, 16.66%, 25%, 33.33% { /* First 5 seconds (5 bounces) */
     animation-timing-function: ease-in-out;
-    transform: translateY(-20px);
+    transform: translateY(0);
   }
   4.16%, 12.5%, 20.83%, 29.16%, 37.5% { /* Between bounces */
-    transform: translateY(0);
+    transform: translateY(-20px);
   }
-  100% { /* Pause for the rest of the 60 seconds */
-    transform: translateY(0);
+  100% {
+    transform: translateY(0); /* Pause for the remaining 55 seconds */
   }
+}
+
+/* Apply the animation to the element */
+.bouncing {
+  animation: bounceCycle 60s linear infinite; /* Full 60-second cycle */
 }
