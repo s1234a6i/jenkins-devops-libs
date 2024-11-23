@@ -1,28 +1,20 @@
-/* Define keyframes for the bounce effect */
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
+/* Keyframes for a single bounce */
+@keyframes singleBounce {
+  0% {
     transform: translateY(0); /* Resting position */
   }
-  40% {
-    transform: translateY(-20px); /* Bounce height */
+  10% {
+    transform: translateY(-20px); /* Bounce up */
   }
-}
-
-/* Define the full cycle: Bounce for 5 seconds, then pause */
-@keyframes bounceCycle {
-  0%, 8.33%, 16.66%, 25%, 33.33% { /* First 5 seconds (5 bounces) */
-    animation-timing-function: ease-in-out;
-    transform: translateY(0);
-  }
-  4.16%, 12.5%, 20.83%, 29.16%, 37.5% { /* Between bounces */
-    transform: translateY(-20px);
+  20% {
+    transform: translateY(0); /* Bounce down */
   }
   100% {
-    transform: translateY(0); /* Pause for the remaining 55 seconds */
+    transform: translateY(0); /* Remain at rest for the rest of the cycle */
   }
 }
 
-/* Apply the animation to the element */
+/* Apply the animation */
 .bouncing {
-  animation: bounceCycle 60s linear infinite; /* Full 60-second cycle */
+  animation: singleBounce 30s linear infinite; /* 30-second cycle, repeats infinitely */
 }
