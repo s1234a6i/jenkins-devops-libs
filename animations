@@ -1,8 +1,6 @@
-Got it! If you want the animation to repeat 5 bounces every minute (bouncing for 5 seconds and resting for 55 seconds), we can achieve this by combining setInterval for the repeating cycle and setTimeout for stopping the animation after 5 bounces.
+Got it! Here’s a solution that doesn’t rely on ngOnDestroy but ensures the bouncing happens exactly 5 times every minute, then stops until the next cycle starts.
 
-Here’s the corrected implementation:
-
-Updated TypeScript: Controlled Animation for 5 Bounces Per Minute
+Updated TypeScript Code
 
 import { Component, OnInit } from '@angular/core';
 
@@ -12,54 +10,49 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./smart-assistant.component.css']
 })
 export class SmartAssistantComponent implements OnInit {
-  animationClass: string = ''; // To dynamically add/remove the animation class
-  private animationInterval: any; // Timer for 1-minute cycles
-  private bounceDuration: number = 5000; // Duration for 5 bounces (5 seconds)
-  private restDuration: number = 55000; // Rest duration (55 seconds)
+  animationClass: string = ''; // To toggle animation class
+  private bounceCount: number = 0; // Counter for bounces
+  private bounceInterval: any; // Timer for controlling bounces
+  private restartTimer: any; // Timer to restart the bouncing cycle
 
   ngOnInit(): void {
     this.startControlledBouncing();
   }
 
-  // Starts the controlled bouncing logic
   startControlledBouncing(): void {
-    // Trigger the animation cycle every 1 minute
-    this.animationInterval = setInterval(() => {
-      this.triggerAnimation();
-    }, 60000); // 1-minute interval
+    this.runBouncingCycle(); // Start the initial cycle
 
-    // Start the first animation immediately
-    this.triggerAnimation();
+    // Restart the cycle every 60 seconds
+    this.restartTimer = setInterval(() => {
+      this.runBouncingCycle();
+    }, 60000); // Every 60 seconds
   }
 
-  // Triggers the bouncing animation for 5 seconds
-  triggerAnimation(): void {
-    this.animationClass = 'bouncing'; // Add the animation class to start bouncing
-    setTimeout(() => {
-      this.animationClass = ''; // Remove the animation class after 5 seconds
-    }, this.bounceDuration); // Stop bouncing after 5 seconds
+  runBouncingCycle(): void {
+    this.bounceCount = 0; // Reset bounce counter
+
+    // Trigger bounce every 1 second, up to 5 bounces
+    this.bounceInterval = setInterval(() => {
+      this.bounceCount++;
+      this.animationClass = 'bouncing'; // Apply bouncing class
+
+      setTimeout(() => {
+        this.animationClass = ''; // Remove class after each bounce
+      }, 900); // Ensure bounce ends before the next one
+
+      if (this.bounceCount >= 5) {
+        clearInterval(this.bounceInterval); // Stop after 5 bounces
+      }
+    }, 1000); // 1-second interval for each bounce
   }
 }
 
-Explanation:
+CSS for Bouncing
 
-	1.	Bouncing for 5 Seconds:
-	•	The animation is triggered by adding the class bouncing to the element.
-	•	The class is removed after 5 seconds (equal to the duration of 5 bounces) using setTimeout.
-	2.	Rest for 55 Seconds:
-	•	The setInterval repeats the bouncing cycle every 60 seconds (1 minute).
-	•	By removing the class after 5 seconds, the element rests for 55 seconds before bouncing again.
-	3.	Immediate Start:
-	•	The first animation cycle starts immediately by calling triggerAnimation() directly within ngOnInit.
-	4.	Reusable Configuration:
-	•	bounceDuration and restDuration variables make it easy to tweak the timing logic.
-
-CSS Animation (Bouncing Effect)
-
-Ensure you have a bouncing class in your CSS to create the bounce effect:
+Define a keyframe for the bouncing animation:
 
 .bouncing {
-  animation: bounce 1s ease infinite;
+  animation: bounce 1s ease; /* 1-second single bounce */
 }
 
 @keyframes bounce {
@@ -74,13 +67,23 @@ Ensure you have a bouncing class in your CSS to create the bounce effect:
   }
 }
 
-Final Flow:
+Explanation of the Solution
 
-	1.	Every Minute:
-	•	The animation triggers and lasts for 5 seconds (5 bounces).
-	2.	Rest:
-	•	After 5 seconds, the animation stops and rests for 55 seconds.
-	3.	Repeat:
-	•	The cycle repeats every 60 seconds indefinitely.
+	1.	Controlled Bounce Cycle:
+	•	The runBouncingCycle() method is triggered every 60 seconds by setInterval (via restartTimer).
+	•	Within this cycle, setInterval (via bounceInterval) ensures exactly 5 bounces (1 per second).
+	2.	Stopping After 5 Bounces:
+	•	The bounceCount ensures that the bouncing stops after exactly 5 iterations, and clearInterval(this.bounceInterval) halts further bounces.
+	3.	Restarting:
+	•	The outer restartTimer re-triggers the runBouncingCycle() every 60 seconds.
+	4.	Animation Duration:
+	•	Each bounce lasts 1 second, ensuring perfect synchronization with the timers.
 
-Let me know if you face any issues or need further customization!
+Behavior
+
+	•	Bouncing: The element bounces exactly 5 times (1 bounce per second).
+	•	Pausing: Bouncing stops automatically after 5 bounces and resumes after 55 seconds, completing a 60-second cycle.
+
+This setup ensures seamless attention-grabbing behavior without indefinite bouncing or relying on lifecycle hooks like ngOnDestroy.
+
+Let me know if you need further tweaks!
