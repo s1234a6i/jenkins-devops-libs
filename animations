@@ -1,0 +1,104 @@
+To add animations to your Smart Assistant that display for 5 seconds every 1 minute to grab user attention, you can follow these steps:
+
+Implementation Steps:
+
+	1.	Include CSS Animations:
+Define CSS animations for the desired effects (e.g., blinking, bouncing, sliding).
+	2.	Use Angular Lifecycle Hooks:
+Utilize Angular’s lifecycle hooks to start and stop the animation.
+	3.	Add a Timer:
+Set up a timer in the component’s TypeScript file to trigger the animation every 1 minute.
+	4.	Bind Animation Classes:
+Dynamically bind animation classes to the Smart Assistant UI element.
+
+Example Code:
+
+1. CSS Animation Styles
+
+/* Add this in your styles.css or component CSS file */
+
+/* Example: Blinking Effect */
+.blinking {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+/* Example: Bouncing Effect */
+.bouncing {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+2. HTML Template
+
+<div class="smart-assistant" [ngClass]="animationClass">
+  <!-- Smart Assistant Content -->
+  <h1>Smart Assistant</h1>
+  <p>How can I help you today?</p>
+</div>
+
+3. TypeScript Component
+
+import { Component, OnInit, OnDestroy } from '@angular/core';
+
+@Component({
+  selector: 'app-smart-assistant',
+  templateUrl: './smart-assistant.component.html',
+  styleUrls: ['./smart-assistant.component.css']
+})
+export class SmartAssistantComponent implements OnInit, OnDestroy {
+  animationClass: string = ''; // To bind animation classes dynamically
+  private animationTimer: any; // Timer reference for 1-minute interval
+  private stopAnimationTimer: any; // Timer reference to stop animation
+
+  ngOnInit(): void {
+    this.startAnimationCycle();
+  }
+
+  ngOnDestroy(): void {
+    // Clear timers to avoid memory leaks
+    clearInterval(this.animationTimer);
+    clearTimeout(this.stopAnimationTimer);
+  }
+
+  startAnimationCycle(): void {
+    this.animationTimer = setInterval(() => {
+      this.triggerAnimation();
+    }, 60000); // Every 1 minute
+  }
+
+  triggerAnimation(): void {
+    this.animationClass = 'blinking'; // Start the animation (use desired effect)
+    this.stopAnimationTimer = setTimeout(() => {
+      this.animationClass = ''; // Remove animation after 5 seconds
+    }, 5000); // 5 seconds
+  }
+}
+
+Explanation:
+
+	1.	CSS Animations:
+	•	Define animations using @keyframes in CSS.
+	•	You can create various effects like blinking, bouncing, or scaling.
+	2.	Dynamic Animation Class:
+	•	Use Angular’s [ngClass] directive to toggle animation classes.
+	3.	Timer:
+	•	A setInterval triggers the animation every 1 minute.
+	•	A setTimeout removes the animation after 5 seconds.
+	4.	Clean-Up:
+	•	Use ngOnDestroy to clear the timers when the component is destroyed, avoiding memory leaks.
+
+Result:
+
+The Smart Assistant will animate (e.g., blink or bounce) for 5 seconds every 1 minute, drawing user attention in a non-intrusive way.
+
+Would you like help customizing the animation styles further or adding more complex effects?
