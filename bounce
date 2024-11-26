@@ -1,3 +1,4 @@
+/* Keyframe for the bounce animation */
 @keyframes bounce {
   0%, 100% {
     transform: translateY(0);
@@ -7,15 +8,20 @@
   }
 }
 
+/* Keyframe to control the cycle of the bounce and the pause */
 @keyframes cycleAnimation {
-  0%, 49.99% {
-    animation: bounce 1s ease 5; /* Bounce 5 times */
+  0%, 8.33% { /* First 5 seconds (5 bounces of 1 second each) */
+    animation-timing-function: ease-in-out;
+    transform: translateY(0);
+    animation: bounce 1s ease 5; /* 5 iterations of bounce */
   }
-  50%, 100% {
-    animation: none; /* Pause for 5 seconds */
+  8.34%, 100% { /* Remaining 55 seconds are paused */
+    transform: translateY(0); /* Stay still */
+    animation: none;
   }
 }
 
+/* Apply the animation to the mat-fab element */
 .mat-fab {
   background-color: var(--header-bg-color);
   color: white;
@@ -30,6 +36,6 @@
   align-items: center;
   justify-content: center;
 
-  /* Applying the cycleAnimation to repeat every minute */
-  animation: cycleAnimation 1m infinite;
+  /* Use the cycleAnimation for the desired behavior */
+  animation: cycleAnimation 1m infinite; /* Repeats every 1 minute */
 }
