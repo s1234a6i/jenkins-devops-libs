@@ -1,0 +1,23 @@
+this.greetings = {
+    "hello": "Hello! How can I assist you today?",
+    "hi": "Hi there! What can I do for you?",
+    "greetings": "Greetings! How may I help you?",
+    "how are you": "I'm a virtual assistant, always ready to help you!",
+    "how are you?": "I'm a virtual assistant, always ready to help you!",
+    "help": "Sure, tell me what you need help with, and I'll do my best to assist you.",
+    "good morning": "Good morning! How can I make your day better?",
+    "good afternoon": "Good afternoon! What can I assist you with?",
+    "good evening": "Good evening! How can I help you today?",
+    "what can you do": "I can assist you with a variety of tasks. Let me know what you need help with!",
+    "thanks": "You're welcome! Let me know if there's anything else I can help with.",
+    "thank you": "You're welcome! I'm here to assist you anytime.",
+    "bye": "Goodbye! Have a great day ahead!",
+    "goodbye": "Take care! Feel free to reach out whenever you need assistance.",
+    "what's your name": "I'm your friendly assistant, here to make things easier for you.",
+    "tell me a joke": "Why don’t skeletons fight each other? They don’t have the guts!",
+    "who made you": "I was created to assist you by a team of dedicated developers.",
+    "what time is it": `It's ${new Date().toLocaleTimeString()} right now.`,
+    "what's the date today": `Today's date is ${new Date().toLocaleDateString()}.`,
+    "can you help me": "Of course! Let me know what you need, and I'll do my best to assist.",
+    "default": "I'm here to help! Could you please rephrase your question?"
+};
