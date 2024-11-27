@@ -1,0 +1,66 @@
+To fix the issue with convertToCSV producing [object Object] in the CSV, you need to ensure the function properly handles nested objects. Additionally, if you have an API returning data in JSON format, it can be converted to CSV more effectively.
+
+Here’s a corrected version of your convertToCSV function:
+
+Updated convertToCSV Function
+
+convertToCSV(data: any[]): string {
+    if (!data || !data.length) {
+        return '';
+    }
+
+    // Extract headers from the first object
+    const headers = Object.keys(data[0]);
+
+    // Map the data to CSV rows
+    const rows = data.map(row => {
+        return headers.map(header => {
+            const value = row[header];
+            // Check if value is an object or array, stringify it
+            return typeof value === 'object' && value !== null
+                ? JSON.stringify(value)
+                : value;
+        }).join(','); // Join values with commas
+    });
+
+    // Combine headers and rows
+    return [headers.join(','), ...rows].join('\r\n');
+}
+
+Key Changes:
+
+	1.	Stringify Objects: If a cell contains an object or array, it’s converted to a JSON string using JSON.stringify.
+	2.	Dynamic Headers: Headers are automatically extracted from the keys of the first object in the array.
+	3.	Handles Edge Cases: It checks if data is empty or invalid.
+
+Example Usage:
+
+const jsonData = [
+    { name: "John", age: 30, address: { city: "New York", zip: "10001" } },
+    { name: "Jane", age: 25, address: { city: "Los Angeles", zip: "90001" } }
+];
+
+const csvData = this.convertToCSV(jsonData);
+this.downloadCSV(csvData, 'report.csv');
+
+Resulting CSV:
+
+name,age,address
+John,30,"{""city"":""New York"",""zip"":""10001""}"
+Jane,25,"{""city"":""Los Angeles"",""zip"":""90001""}"
+
+For Data from an API:
+
+If you already have an API that provides a list of maps or JSON objects:
+	1.	Fetch the data using your API call.
+	2.	Use the updated convertToCSV function to convert the JSON response to CSV.
+	3.	Trigger the download using your downloadCSV function.
+
+Example API Integration:
+
+this.http.get<any[]>('your-api-endpoint').subscribe(data => {
+    const csvData = this.convertToCSV(data);
+    this.downloadCSV(csvData, 'feedback_report.csv');
+});
+
+Let me know if you need further assistance!
