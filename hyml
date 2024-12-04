@@ -1,0 +1,84 @@
+Yes, it is possible to invoke a POST API call and display the response dynamically in the same HTML page using JavaScript. Below is an example code for an HTML page that fulfills your requirements:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yes/No API Response</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .response {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Choose an Option</h1>
+  <button id="yesButton">Yes</button>
+  <button id="noButton">No</button>
+
+  <div id="responseContainer" class="response" style="display: none;">
+    <h2>Response</h2>
+    <p id="apiResponse"></p>
+  </div>
+
+  <script>
+    // Add event listener to "Yes" button
+    document.getElementById('yesButton').addEventListener('click', function () {
+      invokeApi('yes');
+    });
+
+    // Add event listener to "No" button
+    document.getElementById('noButton').addEventListener('click', function () {
+      invokeApi('no');
+    });
+
+    // Function to invoke API and handle the response
+    function invokeApi(option) {
+      const url = 'https://your-api-endpoint.com'; // Replace with your POST API URL
+      const data = { option: option };
+
+      // Make a POST request using Fetch API
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json()) // Parse JSON response
+        .then(data => {
+          // Display response in the HTML
+          document.getElementById('responseContainer').style.display = 'block';
+          document.getElementById('apiResponse').textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(error => {
+          // Handle error
+          document.getElementById('responseContainer').style.display = 'block';
+          document.getElementById('apiResponse').textContent = `Error: ${error.message}`;
+        });
+    }
+  </script>
+</body>
+</html>
+
+Steps to Implement:
+
+	1.	Replace API URL: Replace https://your-api-endpoint.com with your actual POST API endpoint.
+	2.	API Data: Customize the payload ({ option: option }) based on your API’s expected input format.
+	3.	Deploy the HTML: Save this as an HTML file and deploy it in Jenkins.
+
+Features:
+
+	•	When the user clicks “Yes” or “No,” a POST API call is made with the selected option as the payload.
+	•	The API response (or any error) is displayed dynamically on the same page.
+	•	Simple and user-friendly interface with error handling.
+
+Let me know if you need further assistance!
