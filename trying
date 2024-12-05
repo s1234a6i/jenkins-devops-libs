@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Assistant Summary</title>
+  <style>
+    /* Global styling for better visuals */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    h1 {
+      color: #444;
+      text-align: center;
+    }
+
+    .summary-section {
+      margin: 20px auto;
+      padding: 20px;
+      border: 4px solid #ddd; /* Default border color */
+      border-radius: 8px;
+      background-color: #fff;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+    }
+
+    .summary-section.success {
+      border-color: #4CAF50; /* Green for success */
+    }
+
+    .summary-section.unstable {
+      border-color: #FFC107; /* Yellow for unstable */
+    }
+
+    .summary-section.failure {
+      border-color: #F44336; /* Red for failure */
+    }
+
+    .summary-section.unknown {
+      border-color: #9E9E9E; /* Grey for unknown or default */
+    }
+
+    p {
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .navigation-link {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .navigation-link a {
+      text-decoration: none;
+      color: #007BFF;
+      font-weight: bold;
+    }
+
+    .navigation-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: #F44336;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Smart Assistant Summary</h1>
+  <div id="summary-section" class="summary-section">
+    <p id="response">
+      To resolve this issue, we recommend creating a support ticket through our self-service platform. This platform also allows you to interact with our Smart Assistant for real-time guidance and assistance.
+    </p>
+    <div class="navigation-link">
+      <a href="https://your-smart-assistant-platform.com/support">Access Support Portal</a>
+    </div>
+  </div>
+
+  <script>
+    // Simulated status (replace with dynamic value from your system or API)
+    const buildStatus = "unknown"; // Possible values: "success", "unstable", "failure", "unknown"
+
+    // Dynamically update the border color based on build status
+    const summarySection = document.getElementById('summary-section');
+
+    if (buildStatus === 'success') {
+      summarySection.classList.add('success');
+    } else if (buildStatus === 'unstable') {
+      summarySection.classList.add('unstable');
+    } else if (buildStatus === 'failure') {
+      summarySection.classList.add('failure');
+    } else {
+      summarySection.classList.add('unknown'); // Default to grey for unknown or other statuses
+    }
+  </script>
+</body>
+</html>
