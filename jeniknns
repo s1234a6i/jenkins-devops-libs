@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+    environment {
+        // Set Bitbucket credentials and repository details
+        BITBUCKET_REPO = "https://bitbucket.org/<workspace>/<repo>/raw/<branch>/helm-charts"
+        BITBUCKET_CREDENTIALS_ID = "bitbucket-credentials" // Add your Bitbucket credentials in Jenkins
+        HELM_CHART_DIR = "my-chart" // Replace with the directory of your Helm chart
+    }
+    stages {
+        stage('Setup') {
+            steps {
+                script {
+                    echo "Setting up environment"
+                }
+            }
+        }
+        stage('Package Helm Chart') {
+            steps {
+                script {
+                    echo "Packaging Helm chart..."
+                    sh """
+                        helm package ${HELM_CHART_DIR}
+                    """
+                }
+            }
+        }
+        stage('Generate/Update Index File') {
+            steps {
+                script {
+                    echo "Generating index.yaml..."
+                    sh """
+                        if [ -f index.yaml ]; then
+                            helm repo index --url ${BITBUCKET_REPO} --merge index.yaml .
+                        else
+                            helm repo index --url ${BITBUCKET_REPO} .
+                        fi
+                    """
+                }
+            }
+        }
+        stage('Push to Bitbucket') {
+            steps {
+                script {
+                    echo "Pushing Helm chart and index.yaml to Bitbucket..."
+                    withCredentials([usernamePassword(credentialsId: BITBUCKET_CREDENTIALS_ID, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh """
+                            git config user.name "jenkins"
+                            git config user.email "jenkins@example.com"
+                            git clone https://${USERNAME}:${PASSWORD}@bitbucket.org/<workspace>/<repo>.git temp-repo
+                            cp *.tgz index.yaml temp-repo/helm-charts
+                            cd temp-repo
+                            git add .
+                            git commit -m "Updated Helm charts"
+                            git push https://${USERNAME}:${PASSWORD}@bitbucket.org/<workspace>/<repo>.git
+                        """
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo "Pipeline execution completed!"
+        }
+        success {
+            echo "Helm chart successfully uploaded to Bitbucket!"
+        }
+        failure {
+            echo "Pipeline failed. Please check the logs."
+        }
+    }
+}
