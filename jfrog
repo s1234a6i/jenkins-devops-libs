@@ -1,0 +1,72 @@
+To automatically create release bundles in JFrog Artifactory without using external APIs or manual actions, you can leverage JFrog Distribution’s built-in automation features, such as Event-Based Actions (watching repositories) or Artifactory User Plugins.
+
+Steps to Automate Release Bundles in JFrog
+
+1. Set Up Repository Triggers (Event-Based Actions)
+	•	Purpose: Automatically create release bundles when artifacts are added to a repository.
+	•	How to Configure:
+	1.	Log in to your JFrog Artifactory instance.
+	2.	Go to Administration > Repositories.
+	3.	Select the repository where the artifacts are uploaded (e.g., a release repository).
+	4.	Enable the “Watcher” feature:
+	•	Navigate to Properties or Event-Driven Actions for the repository.
+	•	Configure a watcher to monitor artifact additions or modifications.
+	5.	Use the repository event to trigger a custom Groovy plugin script for creating a release bundle (see Step 2).
+
+2. Develop a Groovy User Plugin
+	•	Purpose: Automate the creation of a release bundle when artifacts are added to a specific repository.
+	•	Steps:
+	1.	Navigate to the Artifactory home directory on the server ($JFROG_HOME/artifactory/var/etc/artifactory/plugins).
+	2.	Create a new Groovy script, for example, releaseBundleCreator.groovy:
+
+import org.artifactory.api.repo.RepositoryService
+import org.jfrog.artifactory.client.model.repository.settings.impl.GenericRepositorySettingsImpl
+import org.jfrog.distribution.bundle.ReleaseBundleService
+
+class ReleaseBundleCreator {
+    def repositoryService = ctx.beanForType(RepositoryService)
+    def releaseBundleService = ctx.beanForType(ReleaseBundleService)
+
+    def afterCreate(Artifact artifact) {
+        def bundleName = "release-bundle-" + System.currentTimeMillis()
+        def version = "1.0.0"
+        def repoKey = artifact.repoKey
+        def path = artifact.path
+
+        // Create a release bundle
+        releaseBundleService.createReleaseBundle(bundleName, version, repoKey, path, 'description')
+        log.info("Release bundle $bundleName:$version created for $repoKey/$path")
+    }
+}
+
+
+	3.	Save the script to the plugins directory.
+	4.	Restart the Artifactory service to load the plugin.
+
+3. Configure Distribution Rules
+	•	Purpose: Automatically distribute release bundles to the desired target repositories.
+	•	Steps:
+	1.	Go to Administration > Distribution Rules in the JFrog UI.
+	2.	Define rules that specify:
+	•	The source repository (e.g., release).
+	•	The target edge nodes or repositories where the release bundles should be distributed.
+
+4. Test the Automation
+	•	Upload an artifact to the repository.
+	•	Verify that the Groovy plugin automatically creates the release bundle.
+	•	Ensure the bundle is distributed according to the defined rules.
+
+Key Considerations
+	•	Permissions:
+	•	Ensure the user or service account running the automation has appropriate permissions for release bundle creation and distribution.
+	•	Logging and Debugging:
+	•	Monitor Artifactory logs to verify the plugin execution and troubleshoot any issues.
+	•	Upgrade Compatibility:
+	•	JFrog plugins are Groovy-based, and compatibility might vary between JFrog versions. Test thoroughly after updates.
+
+Documentation References
+	•	JFrog Distribution User Guide
+	•	Artifactory User Plugins Guide
+	•	Release Bundles
+
+By combining repository event triggers and Groovy scripts, you can create a fully automated workflow for release bundles in JFrog.
