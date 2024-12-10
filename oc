@@ -1,0 +1,113 @@
+To install the Helm chart generated above onto OpenShift Container Platform (OCP), you can follow these steps:
+
+Prerequisites
+	1.	Install oc CLI: Ensure the OpenShift CLI (oc) is installed on your system or Jenkins agent.
+	•	Download: OpenShift CLI Tools.
+	•	Verify installation:
+
+oc version
+
+
+	2.	Log in to OpenShift: Authenticate to your OpenShift cluster.
+
+oc login --server=https://<ocp-api-server> --token=<your-token>
+
+
+	3.	Ensure Helm is Installed:
+
+helm version
+
+
+	4.	Create a Target Namespace:
+	•	If the namespace for your Helm chart doesn’t already exist, create it:
+
+oc create namespace <target-namespace>
+
+Steps to Install the Helm Chart
+	1.	Add Your Helm Repository:
+Add your Bitbucket Helm repository to Helm:
+
+helm repo add my-bitbucket-repo https://bitbucket.org/<workspace>/<repo>/raw/<branch>/helm-charts
+helm repo update
+
+
+	2.	Verify the Chart is Available:
+Check if your Helm chart is listed in the repository:
+
+helm search repo my-bitbucket-repo
+
+
+	3.	Install the Helm Chart:
+Use the helm install command to deploy the chart to OpenShift:
+
+helm install <release-name> my-bitbucket-repo/<chart-name> --namespace <target-namespace>
+
+Example:
+
+helm install my-app my-bitbucket-repo/my-chart --namespace my-namespace
+
+
+	4.	Verify the Deployment:
+After installation, verify that the resources are deployed correctly:
+
+oc get all -n <target-namespace>
+
+Optional Customizations
+	1.	Pass Values to the Chart:
+If your Helm chart requires custom values, you can override them during installation:
+
+helm install <release-name> my-bitbucket-repo/<chart-name> --namespace <target-namespace> -f values.yaml
+
+Or pass individual values:
+
+helm install <release-name> my-bitbucket-repo/<chart-name> --namespace <target-namespace> --set key=value
+
+
+	2.	Use oc adm for Role Binding (If Needed):
+If the Helm chart creates pods or services that require elevated permissions, ensure proper role binding:
+
+oc adm policy add-scc-to-user anyuid -z <service-account-name> -n <target-namespace>
+
+
+	3.	Upgrade or Rollback:
+	•	Upgrade:
+
+helm upgrade <release-name> my-bitbucket-repo/<chart-name> --namespace <target-namespace>
+
+
+	•	Rollback:
+
+helm rollback <release-name> <revision-number>
+
+Automating the Installation in Jenkins
+
+If you want to automate this process in Jenkins, add the following stage to your existing pipeline:
+
+stage('Deploy to OpenShift') {
+    steps {
+        script {
+            withCredentials([string(credentialsId: 'ocp-token', variable: 'OCP_TOKEN')]) {
+                sh """
+                oc login --server=https://<ocp-api-server> --token=${OCP_TOKEN}
+                helm repo add my-bitbucket-repo https://bitbucket.org/<workspace>/<repo>/raw/<branch>/helm-charts
+                helm repo update
+                helm install my-app my-bitbucket-repo/my-chart --namespace my-namespace
+                """
+            }
+        }
+    }
+}
+
+Replace <ocp-api-server> and <workspace>/<repo>/<branch> with your actual OpenShift API server and Bitbucket details.
+
+Verify the Deployment
+
+Run:
+
+oc get pods -n <target-namespace>
+
+Check the logs of your pods to ensure they are running as expected:
+
+oc logs <pod-name> -n <target-namespace>
+
+This completes the installation of the Helm chart on OpenShift. Adjust the configuration based on your Helm chart’s requirements!
