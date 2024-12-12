@@ -1,0 +1,5 @@
+I wanted to provide an update on the Windows deployment POC. There has been a complication regarding firewall requests. The requirement is for these to be processed at the subset level instead of the security group or IP level.
+
+While the RE team is requesting us to create or submit these firewall requests, I clarified that we do not own the Jenkins or Windows servers. Our scope is limited to the automation and orchestration aspects, and the rest of the infrastructure setup is considered a prerequisite.
+
+Please let me know if further clarification or alignment is needed on this.
