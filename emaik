@@ -1,3 +1,4 @@
+
 Here’s a well-structured HTML template for your email body. The design uses CSS for styling and dynamic placeholders that can be filled in by your Jenkins pipeline script. It highlights the compliance statuses with red, green, and yellow borders for failure, success, and unstable statuses, respectively.
 
 <!DOCTYPE html>
@@ -167,3 +168,157 @@ Explanation of Placeholders:
 	•	{{ERROR_DETAILS_DISPLAY}}: Use block if errors exist, otherwise none.
 
 You can dynamically fill these placeholders in your Jenkins pipeline script using the env or groovy templates before sending the email.
+
+
+Here’s the updated HTML template without a table for the “Job Details” section. Instead, it uses a cleaner format with individual key-value pairs displayed in a structured list.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #444;
+        }
+        .details-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .details-list li {
+            margin-bottom: 8px;
+        }
+        .details-list span {
+            font-weight: bold;
+        }
+        .status {
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .status-success {
+            border: 2px solid green;
+            background-color: #e6ffe6;
+            color: green;
+        }
+        .status-failure {
+            border: 2px solid red;
+            background-color: #ffe6e6;
+            color: red;
+        }
+        .status-unstable {
+            border: 2px solid yellow;
+            background-color: #fff9e6;
+            color: goldenrod;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f4f4f9;
+            font-weight: bold;
+        }
+        .error-details {
+            background-color: #ffe6e6;
+            padding: 10px;
+            border: 1px solid red;
+            color: red;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Build Report</h1>
+
+        <div class="section">
+            <h2>Job Details</h2>
+            <ul class="details-list">
+                <li><span>Application ID:</span> 12345</li>
+                <li><span>Jenkins URL:</span> <a href="http://jenkins.example.com/job/123">http://jenkins.example.com/job/123</a></li>
+                <li><span>Application Repository:</span> https://github.com/example/repo</li>
+                <li><span>Branch:</span> main</li>
+                <li><span>Commit Hash:</span> abcdef1234567890</li>
+                <li><span>Build User:</span> johndoe</li>
+                <li><span>Executed Feature:</span> Feature XYZ</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Compliance Status</h2>
+            <table>
+                <tr>
+                    <th>FOSS Scan</th>
+                    <td class="status status-success">Success</td>
+                </tr>
+                <tr>
+                    <th>Fortify Scan</th>
+                    <td class="status status-failure">Failure</td>
+                </tr>
+                <tr>
+                    <th>AquaSec Scan</th>
+                    <td class="status status-unstable">Unstable</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Error Details</h2>
+            <div class="error-details">
+                Some error details here related to the Fortify scan.
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated message sent by the Jenkins pipeline.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+Changes:
+	1.	Replaced the “Job Details” table with an unordered list (<ul>). Each item uses a label (<span>) and value format for better readability.
+	2.	Retained all other sections for compliance status and error details.
+
+You can preview this in a browser to see the final look. Let me know if you’d like further adjustments!
+
+
+
