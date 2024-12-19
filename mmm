@@ -1,0 +1,90 @@
+Outlook has limited support for modern HTML and CSS, which can lead to inconsistencies in rendering. To make your email render correctly and look good in Outlook, you should adhere to simpler HTML and inline styles. Here’s a restructured and Outlook-compatible version of your email template:
+
+Key Adjustments:
+	1.	Use Inline Styles: Outlook doesn’t support external or <style>-based CSS for most styles.
+	2.	Simplify Styling: Remove unsupported properties like box-shadow, border-radius, and use table-based layout.
+	3.	Table-Based Structure: Email clients like Outlook handle tables much better than divs for layout.
+	4.	Fallback Fonts and Colors: Ensure all fonts and colors are defined inline.
+
+Here’s the updated template:
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Build Report</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 0;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f9; padding: 20px;">
+        <tr>
+            <td align="center">
+                <table width="800" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border: 1px solid #dddddd; padding: 20px; text-align: left;">
+                    <tr>
+                        <td>
+                            <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px;">Build Report</h1>
+                        </td>
+                    </tr>
+                    <!-- Job Details -->
+                    <tr>
+                        <td>
+                            <h2 style="color: #444444; font-size: 18px; margin-bottom: 10px;">Job Details</h2>
+                            <p style="margin: 5px 0;"><strong>Application ID:</strong> {{APPLICATION_ID}}</p>
+                            <p style="margin: 5px 0;"><strong>Jenkins URL:</strong> <a href="{{JENKINS_URL}}" style="color: #0066cc;">{{JENKINS_URL}}</a></p>
+                            <p style="margin: 5px 0;"><strong>Application Repository:</strong> {{APP_REPO}}</p>
+                            <p style="margin: 5px 0;"><strong>Branch:</strong> {{APP_BRANCH}}</p>
+                            <p style="margin: 5px 0;"><strong>Commit Hash:</strong> {{COMMIT_HASH}}</p>
+                            <p style="margin: 5px 0;"><strong>Build User:</strong> {{BUILD_USER}}</p>
+                            <p style="margin: 5px 0;"><strong>Executed Feature:</strong> {{EXECUTED_FEATURE}}</p>
+                        </td>
+                    </tr>
+                    <!-- FOSS Scan -->
+                    <tr>
+                        <td>
+                            <h2 style="color: #444444; font-size: 18px; margin-bottom: 10px;">FOSS Scan Details</h2>
+                            <table width="100%" cellpadding="5" cellspacing="0" style="border: 1px solid #dddddd; border-collapse: collapse;">
+                                <tr>
+                                    <th style="background-color: #f4f4f9; border: 1px solid #dddddd; text-align: left; padding: 5px;">Status</th>
+                                    <td style="border: 1px solid #dddddd; padding: 5px; color: {{FOSS_STATUS_COLOR}};">{{FOSS_STATUS}}</td>
+                                </tr>
+                                <tr>
+                                    <th style="background-color: #f4f4f9; border: 1px solid #dddddd; text-align: left; padding: 5px;">Issues Found</th>
+                                    <td style="border: 1px solid #dddddd; padding: 5px;">{{FOSS_ISSUES}}</td>
+                                </tr>
+                                <tr>
+                                    <th style="background-color: #f4f4f9; border: 1px solid #dddddd; text-align: left; padding: 5px;">Scan Duration</th>
+                                    <td style="border: 1px solid #dddddd; padding: 5px;">{{FOSS_DURATION}}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <!-- Repeat for Fortify, SonarQube, AquaSec -->
+                    <tr>
+                        <td>
+                            <h2 style="color: #444444; font-size: 18px; margin-bottom: 10px;">Error Details</h2>
+                            <p style="background-color: #ffe6e6; color: #cc0000; padding: 10px; border: 1px solid #cc0000; border-radius: 4px;">
+                                {{ERROR_DETAILS}}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; padding-top: 20px; color: #666666; font-size: 12px;">
+                            This is an automated message sent by the Jenkins pipeline.
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+
+Key Improvements:
+	1.	Curved Borders Removed: Replaced with simple rectangular borders since Outlook doesn’t fully support border-radius.
+	2.	Table-Based Layout: The layout relies entirely on <table> elements, ensuring consistency across email clients.
+	3.	Inline Styles: Added all styles inline to ensure compatibility.
+	4.	Color Placeholder ({{COLOR_PLACEHOLDER}}): Use colors dynamically based on scan results.
+
+Instructions:
+	•	Replace placeholders like {{APPLICATION_ID}}, {{FOSS_STATUS}}, etc., with dynamic values in your Jenkins pipeline.
+	•	Define a color mapping for statuses (green for success, red for failure, etc.) to update {{FOSS_STATUS_COLOR}} dynamically.
+
+This template ensures a professional appearance and consistent rendering across email clients, including Outlook. Let me know if you need further adjustments!
