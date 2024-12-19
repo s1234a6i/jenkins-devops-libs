@@ -1,0 +1,169 @@
+Here’s a well-structured HTML template for your email body. The design uses CSS for styling and dynamic placeholders that can be filled in by your Jenkins pipeline script. It highlights the compliance statuses with red, green, and yellow borders for failure, success, and unstable statuses, respectively.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Build Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #444;
+        }
+        .status {
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .status-success {
+            border: 2px solid green;
+            background-color: #e6ffe6;
+            color: green;
+        }
+        .status-failure {
+            border: 2px solid red;
+            background-color: #ffe6e6;
+            color: red;
+        }
+        .status-unstable {
+            border: 2px solid yellow;
+            background-color: #fff9e6;
+            color: goldenrod;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f4f4f9;
+            font-weight: bold;
+        }
+        .error-details {
+            background-color: #ffe6e6;
+            padding: 10px;
+            border: 1px solid red;
+            color: red;
+            border-radius: 5px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Build Report</h1>
+
+        <div class="section">
+            <h2>Job Details</h2>
+            <table>
+                <tr>
+                    <th>Application ID</th>
+                    <td>{{APPLICATION_ID}}</td>
+                </tr>
+                <tr>
+                    <th>Jenkins URL</th>
+                    <td><a href="{{JENKINS_URL}}">{{JENKINS_URL}}</a></td>
+                </tr>
+                <tr>
+                    <th>Application Repository</th>
+                    <td>{{APP_REPO}}</td>
+                </tr>
+                <tr>
+                    <th>Branch</th>
+                    <td>{{APP_BRANCH}}</td>
+                </tr>
+                <tr>
+                    <th>Commit Hash</th>
+                    <td>{{COMMIT_HASH}}</td>
+                </tr>
+                <tr>
+                    <th>Build User</th>
+                    <td>{{BUILD_USER}}</td>
+                </tr>
+                <tr>
+                    <th>Executed Feature</th>
+                    <td>{{EXECUTED_FEATURE}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Compliance Status</h2>
+            <table>
+                <tr>
+                    <th>FOSS Scan</th>
+                    <td class="status {{FOSS_STATUS}}">{{FOSS_STATUS_TEXT}}</td>
+                </tr>
+                <tr>
+                    <th>Fortify Scan</th>
+                    <td class="status {{FORTIFY_STATUS}}">{{FORTIFY_STATUS_TEXT}}</td>
+                </tr>
+                <tr>
+                    <th>AquaSec Scan</th>
+                    <td class="status {{AQUASEC_STATUS}}">{{AQUASEC_STATUS_TEXT}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section" style="display: {{ERROR_DETAILS_DISPLAY}};">
+            <h2>Error Details</h2>
+            <div class="error-details">
+                {{ERROR_DETAILS}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated message sent by the Jenkins pipeline.</p>
+        </div>
+    </div>
+</body>
+</html>
+
+Explanation of Placeholders:
+	•	{{APPLICATION_ID}}: Replace with the application ID.
+	•	{{JENKINS_URL}}: Replace with the Jenkins job URL.
+	•	{{APP_REPO}}: Replace with the application repository URL.
+	•	{{APP_BRANCH}}: Replace with the branch name.
+	•	{{COMMIT_HASH}}: Replace with the Git commit hash.
+	•	{{BUILD_USER}}: Replace with the user who initiated the build.
+	•	{{EXECUTED_FEATURE}}: Replace with the feature being executed.
+	•	{{FOSS_STATUS}}, {{FORTIFY_STATUS}}, {{AQUASEC_STATUS}}: Use classes status-success, status-failure, or status-unstable dynamically.
+	•	{{FOSS_STATUS_TEXT}}, {{FORTIFY_STATUS_TEXT}}, {{AQUASEC_STATUS_TEXT}}: Insert corresponding compliance statuses (“Success”, “Failure”, “Unstable”).
+	•	{{ERROR_DETAILS}}: Insert any error details (or leave empty if none).
+	•	{{ERROR_DETAILS_DISPLAY}}: Use block if errors exist, otherwise none.
+
+You can dynamically fill these placeholders in your Jenkins pipeline script using the env or groovy templates before sending the email.
