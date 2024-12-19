@@ -1,0 +1,224 @@
+Outlook’s rendering limitations make it challenging to create highly styled emails. However, we can still achieve an appealing, modern design by balancing advanced design features and compatibility.
+
+Here’s a refined version of the email template with better styling that still works across major email clients, including Outlook:
+
+Updated Template with Enhanced Styling
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Build Report</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            font-family: Arial, sans-serif;
+        }
+        .email-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #4CAF50;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .section {
+            padding: 20px;
+            border-bottom: 1px solid #dddddd;
+        }
+        .section h2 {
+            color: #333333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        .details-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .details-list li {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .details-list span {
+            font-weight: bold;
+        }
+        .table-container {
+            margin-top: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table th, table td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f4f4f9;
+            font-weight: bold;
+        }
+        .status {
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 5px;
+            text-align: center;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-failure {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status-unstable {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #666666;
+            background-color: #f4f4f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            Build Report
+        </div>
+
+        <!-- Job Details Section -->
+        <div class="section">
+            <h2>Job Details</h2>
+            <ul class="details-list">
+                <li><span>Application ID:</span> {{APPLICATION_ID}}</li>
+                <li><span>Jenkins URL:</span> <a href="{{JENKINS_URL}}" style="color: #4CAF50;">{{JENKINS_URL}}</a></li>
+                <li><span>Application Repository:</span> {{APP_REPO}}</li>
+                <li><span>Branch:</span> {{APP_BRANCH}}</li>
+                <li><span>Commit Hash:</span> {{COMMIT_HASH}}</li>
+                <li><span>Build User:</span> {{BUILD_USER}}</li>
+                <li><span>Executed Feature:</span> {{EXECUTED_FEATURE}}</li>
+            </ul>
+        </div>
+
+        <!-- Compliance Details Section -->
+        <div class="section">
+            <h2>FOSS Scan</h2>
+            <table>
+                <tr>
+                    <th>Status</th>
+                    <td class="status {{FOSS_STATUS_CLASS}}">{{FOSS_STATUS}}</td>
+                </tr>
+                <tr>
+                    <th>Issues Found</th>
+                    <td>{{FOSS_ISSUES}}</td>
+                </tr>
+                <tr>
+                    <th>Scan Duration</th>
+                    <td>{{FOSS_DURATION}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <h2>Fortify Scan</h2>
+            <table>
+                <tr>
+                    <th>Status</th>
+                    <td class="status {{FORTIFY_STATUS_CLASS}}">{{FORTIFY_STATUS}}</td>
+                </tr>
+                <tr>
+                    <th>Critical Issues</th>
+                    <td>{{FORTIFY_CRITICAL_ISSUES}}</td>
+                </tr>
+                <tr>
+                    <th>Scan Duration</th>
+                    <td>{{FORTIFY_DURATION}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <h2>SonarQube Scan</h2>
+            <table>
+                <tr>
+                    <th>Status</th>
+                    <td class="status {{SONARQUBE_STATUS_CLASS}}">{{SONARQUBE_STATUS}}</td>
+                </tr>
+                <tr>
+                    <th>Bugs</th>
+                    <td>{{SONARQUBE_BUGS}}</td>
+                </tr>
+                <tr>
+                    <th>Vulnerabilities</th>
+                    <td>{{SONARQUBE_VULNERABILITIES}}</td>
+                </tr>
+                <tr>
+                    <th>Code Smells</th>
+                    <td>{{SONARQUBE_CODE_SMELLS}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <h2>AquaSec Scan</h2>
+            <table>
+                <tr>
+                    <th>Status</th>
+                    <td class="status {{AQUASEC_STATUS_CLASS}}">{{AQUASEC_STATUS}}</td>
+                </tr>
+                <tr>
+                    <th>High-Risk Issues</th>
+                    <td>{{AQUASEC_HIGH_RISK_ISSUES}}</td>
+                </tr>
+                <tr>
+                    <th>Scan Duration</th>
+                    <td>{{AQUASEC_DURATION}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Error Details -->
+        <div class="section">
+            <h2>Error Details</h2>
+            <p style="background-color: #f8d7da; color: #721c24; padding: 10px; border: 1px solid #f5c6cb;">
+                {{ERROR_DETAILS}}
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            This is an automated message sent by the Jenkins pipeline.
+        </div>
+    </div>
+</body>
+</html>
+
+Improvements:
+	1.	Enhanced Styling:
+	•	Added a green header with a modern font size.
+	•	Styled compliance statuses with clear, color-coded labels (green for success, red for failure, yellow for unstable).
+	•	Used boxed sections to separate content.
+	2.	Outlook Compatibility:
+	•	Simplified layout with table-based structures.
+	•	Inline styles ensure reliable rendering across email clients.
+	3.	Dynamic Placeholders:
+	•	Placeholders like {{APPLICATION_ID}}, {{FOSS_STATUS}}, and {{ERROR_DETAILS}} can be dynamically replaced by Jenkins or your email generation tool.
+	4.	Aesthetic Enhancements:
+	•	Tables for compliance scans are styled to look more professional.
+	•	Improved spacing and alignment for better readability.
+
+This design balances Outlook compatibility with modern aesthetics. Let me know if you’d like any further refinements!
