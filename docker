@@ -1,0 +1,94 @@
+In an OpenShift Container Platform (OCP) environment, if the deployment was created using Helm charts but you don’t have access to the charts, you can still update the image using OpenShift commands (oc) without affecting the Helm-managed deployment directly.
+
+Here’s how you can update the image in OCP:
+
+Option 1: Use oc set image
+
+The oc set image command updates the container image in the deployment directly.
+
+oc set image deployment/<deployment-name> \
+  <container-name>=my-registry/my-repository:patched-tag -n <namespace>
+
+	•	Replace <deployment-name> with the name of your deployment.
+	•	Replace <container-name> with the container name in the deployment (you can find this via oc describe deployment <deployment-name>).
+	•	Replace my-registry/my-repository:patched-tag with the new image.
+	•	Replace <namespace> with the namespace where the deployment exists.
+
+Option 2: Use oc patch
+
+The oc patch command lets you modify the deployment in a more structured way.
+
+oc patch deployment <deployment-name> -n <namespace> \
+  --type='json' \
+  -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/image", "value":"my-registry/my-repository:patched-tag"}]'
+
+	•	This works similarly to kubectl patch.
+	•	Replace 0 in /containers/0/image if the deployment has multiple containers and you want to update a different one.
+
+Option 3: Edit the Deployment
+
+You can directly edit the deployment YAML in OpenShift:
+	1.	Open the deployment for editing:
+
+oc edit deployment <deployment-name> -n <namespace>
+
+
+	2.	Locate the spec.template.spec.containers section in the YAML file.
+	3.	Update the image field with the new image:
+
+containers:
+- name: <container-name>
+  image: my-registry/my-repository:patched-tag
+
+
+	4.	Save the file and exit. OpenShift will roll out the update and restart the pods automatically.
+
+Option 4: Use oc rollout with Overrides
+
+If you want to control the rollout explicitly, you can do it as follows:
+	1.	Force the image update during rollout:
+
+oc rollout latest deployment/<deployment-name> -n <namespace> \
+  --set image=<container-name>=my-registry/my-repository:patched-tag
+
+
+	2.	Verify the rollout status:
+
+oc rollout status deployment/<deployment-name> -n <namespace>
+
+Verify the Changes
+
+After making the update, confirm the new image is being used:
+	1.	Check the pods:
+
+oc get pods -n <namespace>
+
+
+	2.	Inspect a specific pod:
+
+oc describe pod <pod-name> -n <namespace>
+
+
+	3.	Confirm the running container image:
+
+oc get pods -o jsonpath='{.items[*].spec.containers[*].image}' -n <namespace>
+
+Important Notes
+	1.	Helm Management:
+If you update the deployment directly in OpenShift, Helm might not recognize these changes during subsequent upgrades or rollbacks. If possible, align the Helm chart with your changes later.
+	2.	ImagePullPolicy:
+If you are reusing a tag (e.g., latest or an existing tag), ensure the image is pulled by adding:
+
+oc patch deployment <deployment-name> -n <namespace> \
+  --type='json' \
+  -p='[{"op": "add", "path": "/spec/template/spec/containers/0/imagePullPolicy", "value":"Always"}]'
+
+
+	3.	Rollback:
+If the update causes issues, you can roll back to the previous image:
+
+oc rollout undo deployment/<deployment-name> -n <namespace>
+
+
+
+Let me know if you need further assistance or automation for this process!
