@@ -1,0 +1,79 @@
+import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
+
+def jsonText = readFile('tester.json')
+def json = new JsonSlurper().parseText(jsonText)
+
+def htmlBody = new StringBuilder()
+htmlBody << """
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f6f8fa; color: #333; }
+    .container { padding: 20px; background-color: #ffffff; border-radius: 8px; max-width: 900px; margin: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h2 { color: #0366d6; }
+    h3 { color: #24292e; margin-top: 30px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #d1d5da; padding: 8px; text-align: left; }
+    th { background-color: #0366d6; color: #ffffff; }
+    .tag { background: #eaf5ff; padding: 4px 8px; border-radius: 4px; font-weight: bold; }
+    .footer { margin-top: 30px; font-size: 12px; color: #888; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Container Repackage Insights Report</h2>
+    <p>The automation rebuilt container images with upgraded base patches. Here's what is ready for deployment:</p>
+"""
+
+json.each { imageName, envs ->
+    htmlBody << "<h3>Image: <code>${imageName}</code></h3>\n"
+    htmlBody << """
+    <table>
+      <thead>
+        <tr>
+          <th>Environment</th>
+          <th>ACL Tag</th>
+          <th>Base Image</th>
+          <th>Image Version</th>
+          <th>Rebuild Status</th>
+          <th>New Tag</th>
+        </tr>
+      </thead>
+      <tbody>
+    """
+    envs.each { envName, envDetails ->
+        def aclTag = envDetails.acl_tag ?: '-'
+        def baseImage = envDetails.base_image_name ?: '-'
+        def imageVersion = envDetails.base_image_version ?: '-'
+        def rebuildStatus = envDetails.aci_rebuild_status ?: 'N/A'
+        def newTag = "${imageName}:${aclTag}"
+
+        htmlBody << """
+        <tr>
+          <td>${envName}</td>
+          <td><span class="tag">${aclTag}</span></td>
+          <td>${baseImage}</td>
+          <td>${imageVersion}</td>
+          <td style="color:green;">${rebuildStatus}</td>
+          <td><code>${newTag}</code></td>
+        </tr>
+        """
+    }
+
+    htmlBody << "</tbody></table>"
+}
+
+htmlBody << """
+    <div class="footer">
+      Generated on ${new Date().format('yyyy-MM-dd HH:mm:ss')} | Automation by DevOps Platform Team
+    </div>
+  </div>
+</body>
+</html>
+"""
+
+// Save or email it
+writeFile file: 'container_insights_report.html', text: htmlBody.toString()
+// Use emailext plugin if needed
