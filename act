@@ -1,5 +1,45 @@
-At mid-year, I have delivered significant cross-squad value aligned with leadership expectations — supporting both EndGame and Code Fusion squads. I demonstrated technical leadership, ownership, and adaptability in advancing key initiatives across ACI patching, Java 17 modernization, CI/CD pipeline improvements, and Smart Assistant enhancements.
+Excellent point — in most tools (like Workday), Leadership Expectations and Overall Performance Summary are separate sections.
 
-Throughout these efforts, I greatly benefited from continuous guidance, strategic input, and valuable feedback from my manager, which helped me align my work with broader squad and organizational goals. This ongoing collaboration has been instrumental in driving clarity, prioritization, and impactful delivery.
+Here’s how you can structure it cleanly:
 
-I will continue to build on this progress in H2, completing remaining high-priority deliverables and identifying further opportunities to strengthen our platform capabilities and compliance posture — while continuing to learn from and contribute to the leadership culture of the team.
+1️⃣ Leadership Expectations Summary (you can paste this under "Leadership Expectations" section):
+In the first half of 2025, I contributed across multiple squads — EndGame and Code Fusion — delivering high-impact outcomes aligned with leadership expectations:
+
+Champion Inclusion & Inspire Growth:
+
+Mentored new engineers Nisha and Rishab through onboarding, application deep dives (Java 17 migration, DDPAppService standards), container pipelines, and engineering best practices — helping them build confidence and contribute effectively.
+
+Cultivate Relationships & Communicate Clearly:
+
+Partnered with platform, compliance, security, and leadership teams to drive alignment and clear communication — especially in initiatives such as ACI patching enablement, Java 17 migration, and Smart Assistant enhancements.
+
+Communicated blockers transparently (ex: AWS Q limitations) and pivoted solutions to maintain delivery momentum.
+
+Instill Ownership:
+
+Took ownership and drove multiple key initiatives across ACI patching, Java 17 migration, AWS Account automation, DDP CI/CD improvements, and Smart Assistant modernization.
+
+Actively contributed to both EndGame and Code Fusion squads to deliver value across platform and user-facing capabilities.
+
+Propel Change:
+
+Drove platform modernization, compliance improvements, and operational excellence through ACI patching automation, Java 17 enablement, and Smart Assistant workflow enhancements.
+
+Continuously sought opportunities to improve DDP platform maturity and team velocity.
+
+2️⃣ Overall Performance Summary (you can paste this under "Overall Summary" section):
+Employee Rating: On Track
+
+I am on track against my 2025 goals and leadership expectations. I have delivered significant cross-squad outcomes while continuously aligning with organizational priorities and team leadership direction.
+
+In the first half of the year, I delivered key contributions across both EndGame and Code Fusion squads:
+
+✅ ACI Patching Enablement: Designed solution, authored enablement guide, and drove DDPv4.1 framework enhancements (targeting GA on 05/26).
+✅ Java 17 Migration: Led DDPAppService backend modernization (50% complete), overcoming tooling limitations and aligning with SSP standards.
+✅ AWS Account Automation: Delivered seamless onboarding of AWS accounts into DDP and SSP platforms.
+✅ DDP CI/CD Improvements: Delivered 9+ enhancements (FOSS resolution, OCP orchestration, Podman transition, Aqua plugin fix, Fortify metrics, registry support, OCP pipeline stability).
+✅ Smart Assistant Enhancements: Led DSO workflow alignment, LES Support integration, audit logging improvements — released multiple Smart Assistant features as part of Code Fusion squad efforts.
+
+Throughout these efforts, I greatly benefited from continuous guidance, strategic input, and valuable feedback from my manager, which enabled me to align delivery priorities with broader squad and organizational goals. This collaborative leadership support has been instrumental in driving clarity and impactful outcomes.
+
+I will continue building on this progress in H2 — completing remaining high-priority deliverables and identifying further opportunities to strengthen our platform capabilities, compliance posture, and overall team delivery.
