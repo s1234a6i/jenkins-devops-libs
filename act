@@ -1,0 +1,26 @@
+Goal Name:
+Implement ACI (Application Container Image) Patching Enablement for Secure & Compliant Container Workflows in DDP Framework
+
+Goal Objective:
+Design and implement an automated ACI patching solution to ensure container base images used in DDP pipelines remain current with the latest security patches.
+
+Address identified GRC/compliance gap where no automated mechanism previously existed for keeping ACI images up to date.
+
+Enhance DDPv4.1 framework by updating CI/CD pipeline logic to support ACI patching-aware workflows and provide flexibility for application teams (packaging and auto-deployment options).
+
+Drive adoption of ACI patching solution by providing clear enablement and onboarding guidance to application teams.
+
+Key Results:
+Designed an automated solution architecture for ACI patching and aligned with security/compliance requirements.
+
+Updated core DDPv4.1 CI/CD pipeline logic to enable support for patch-aware image packaging and deployment workflows (via standard Dockerfile placeholders: latest_biv, autodeploy_biv).
+
+Authored the ACI Patching Enablement Guide in collaboration with my manager to document capabilities, usage options, and onboarding steps for application teams.
+
+Conducted cross-team enablement to drive awareness and adoption of the ACI patching solution across DDP container consumers.
+
+Targeted General Availability (GA) rollout of the ACI patching feature for 05/26/2025.
+
+Progress Note (for current status):
+As of mid-year, the ACI Patching Enablement Guide has been completed and shared. DDPv4.1 framework updates to support ACI patching capabilities are in progress. Planning to roll out the feature for General Availability on 05/26/2025 as scheduled.
+
