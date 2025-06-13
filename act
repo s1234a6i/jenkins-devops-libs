@@ -1,45 +1,24 @@
-Excellent point — in most tools (like Workday), Leadership Expectations and Overall Performance Summary are separate sections.
+Goal Plan Summary (Mid-Year)
+1️⃣ ACI Patching Enablement:
+On track — Designed and implemented ACI patching solution to address key compliance gap. Authored ACI Patching Enablement Guide and updated DDPv4.1 CI/CD framework. Targeting GA rollout on 05/26.
 
-Here’s how you can structure it cleanly:
+2️⃣ Java 17 Migration for DDPAppService:
+In progress — Participated in AWS Q early adopters, evaluated limitations. Shifted to phased manual migration approach (50% complete), ensuring SSP standards alignment and backend modernization.
 
-1️⃣ Leadership Expectations Summary (you can paste this under "Leadership Expectations" section):
-In the first half of 2025, I contributed across multiple squads — EndGame and Code Fusion — delivering high-impact outcomes aligned with leadership expectations:
+3️⃣ AWS Account Automation:
+Completed — Delivered automated onboarding of new AWS accounts into DDP and SSP platforms. Resulted in seamless integration and improved efficiency (no manual intervention required).
 
-Champion Inclusion & Inspire Growth:
+4️⃣ DDP CI/CD Enhancements & Bug Fixes:
+On track — Delivered 9+ enhancements including FOSS resolution, OCP orchestration support, Podman transition, Aqua plugin fix, Fortify metrics improvements, ADC2/RDC2 registry support, and pipeline stability fixes. Continuous support ongoing as part of EndGame squad.
 
-Mentored new engineers Nisha and Rishab through onboarding, application deep dives (Java 17 migration, DDPAppService standards), container pipelines, and engineering best practices — helping them build confidence and contribute effectively.
+5️⃣ Smart Assistant Enhancements:
+Completed (for initial scope) — Enhanced Smart Assistant through DSO workflow alignment, LES Support integration, and improved audit logging. Released multiple features via Code Fusion squad to improve compliance readiness and user experience.
 
-Cultivate Relationships & Communicate Clearly:
+6️⃣ Mentoring & Onboarding:
+On track — Mentored new engineers Nisha and Rishab. Provided onboarding support, KT on critical applications, and continuous guidance on engineering best practices (Java 17 migration, container pipelines, squad standards).
 
-Partnered with platform, compliance, security, and leadership teams to drive alignment and clear communication — especially in initiatives such as ACI patching enablement, Java 17 migration, and Smart Assistant enhancements.
+7️⃣ Story Quality / Jira Standards Adoption:
+On track — Fully aligned with Jira story quality standards. Continuously applying best practices for clarity, acceptance criteria, and delivery consistency. Will continue driving improvements through H2.
 
-Communicated blockers transparently (ex: AWS Q limitations) and pivoted solutions to maintain delivery momentum.
 
-Instill Ownership:
-
-Took ownership and drove multiple key initiatives across ACI patching, Java 17 migration, AWS Account automation, DDP CI/CD improvements, and Smart Assistant modernization.
-
-Actively contributed to both EndGame and Code Fusion squads to deliver value across platform and user-facing capabilities.
-
-Propel Change:
-
-Drove platform modernization, compliance improvements, and operational excellence through ACI patching automation, Java 17 enablement, and Smart Assistant workflow enhancements.
-
-Continuously sought opportunities to improve DDP platform maturity and team velocity.
-
-2️⃣ Overall Performance Summary (you can paste this under "Overall Summary" section):
-Employee Rating: On Track
-
-I am on track against my 2025 goals and leadership expectations. I have delivered significant cross-squad outcomes while continuously aligning with organizational priorities and team leadership direction.
-
-In the first half of the year, I delivered key contributions across both EndGame and Code Fusion squads:
-
-✅ ACI Patching Enablement: Designed solution, authored enablement guide, and drove DDPv4.1 framework enhancements (targeting GA on 05/26).
-✅ Java 17 Migration: Led DDPAppService backend modernization (50% complete), overcoming tooling limitations and aligning with SSP standards.
-✅ AWS Account Automation: Delivered seamless onboarding of AWS accounts into DDP and SSP platforms.
-✅ DDP CI/CD Improvements: Delivered 9+ enhancements (FOSS resolution, OCP orchestration, Podman transition, Aqua plugin fix, Fortify metrics, registry support, OCP pipeline stability).
-✅ Smart Assistant Enhancements: Led DSO workflow alignment, LES Support integration, audit logging improvements — released multiple Smart Assistant features as part of Code Fusion squad efforts.
-
-Throughout these efforts, I greatly benefited from continuous guidance, strategic input, and valuable feedback from my manager, which enabled me to align delivery priorities with broader squad and organizational goals. This collaborative leadership support has been instrumental in driving clarity and impactful outcomes.
-
-I will continue building on this progress in H2 — completing remaining high-priority deliverables and identifying further opportunities to strengthen our platform capabilities, compliance posture, and overall team delivery.
+I am on track against all defined goals and have delivered significant value across both EndGame and Code Fusion squads, driving key platform modernization, compliance improvements, and operational excellence while supporting squad-level and cross-functional priorities.
